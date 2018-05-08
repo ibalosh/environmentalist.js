@@ -1,0 +1,30 @@
+{
+  "name": "isitfree",
+  "version": "1.0.0",
+  "main": "./lib/isitfree",
+  "directories": {
+    "lib": "lib"
+  },
+  "dependencies": {
+    "axios": "^0.18.0",
+    "body-parser": "^1.18.2",
+    "express": "^4.16.3",
+    "js-yaml": "^3.11.0",
+    "moment": "^2.22.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "A simple Node.js app to be used with Slack for checking if staging environment is taken.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ibalosh/isitfree.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ibalosh/isitfree/issues"
+  },
+  "homepage": "https://github.com/ibalosh/isitfree#readme"
+}
