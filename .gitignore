@@ -63,3 +63,6 @@ temp
 
 *.yaml
 
+**/*.DS_Store
+**/*.idea
+
