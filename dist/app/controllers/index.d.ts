@@ -1,1 +1,0 @@
-export { EnvironmentController } from "./environments";

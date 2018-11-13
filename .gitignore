@@ -66,3 +66,11 @@ temp
 **/*.DS_Store
 **/*.idea
 
+dist
+
+*.swp
+**/*.DS_Store
+**/*.idea
+**/*.iml
+
+
