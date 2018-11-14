@@ -1,62 +1,49 @@
 import {Environment, Environments} from "../index";
-import {SlackUser} from "../index";
+import {User} from "../index";
+import {Response} from "../index";
 
 export class Manager {
     private environments: Environments;
+    private readonly response: Response;
 
     constructor(environmentNames: string[]) {
-        let environments = new Environments();
-        environmentNames.forEach((name: string) => {
-            environments.addEnvironment(new Environment(name))
-        });
-        this.environments = environments;
+        this.environments = new Environments();
+        environmentNames.forEach((name: string) => { this.environments.addEnvironment(new Environment(name)) });
+
+        this.response = new Response();
     }
 
-    public takeEnvironmentWithResponse(message: string, user: SlackUser): any {
-        let response:any = {
-            code: 200,
-            message: ''
-        };
-
+    public takeEnvironmentAndRespond(message: string, user: User): Response {
         try {
             this.takeEnvironment(message, user);
-            response.message = 'Environment taken.';
-        } catch(e) {
-            response.message = e;
+            this.response.setResponse('Environment taken.');
+        } catch(error) {
+            this.response.setResponse(error.message);
         }
-        return response;
+        return this.response;
     }
 
-    public freeEnvironmentWithResponse(message: string, user: SlackUser): any {
-        let response:any = {
-            code: 200,
-            message: ''
-        };
-
+    public freeEnvironmentAndRespond(message: string, user: User): Response {
         try {
-            this.takeEnvironment(message, user);
-            response.message = 'Environment taken.';
-        } catch(e) {
-            response.message = e;
+            this.freeEnvironment(message, user);
+            this.response.setResponse('Environment freed.');
+        } catch(error) {
+            this.response.setResponse(error.message);
         }
-        return response;
+        return this.response;
     }
 
-    public takeEnvironment(message: string, user: SlackUser): void {
+    public takeEnvironment(message: string, user: User): void {
         const parsedMessage = this.parseMessage(message);
         this.environments.takeEnvironment(parsedMessage.environmentName, user, parsedMessage.forceTakingEnvironment);
     }
 
-    public freeEnvironment(environmentName: string, username: string): void {
-        this.environments.freeEnvironment(environmentName, new SlackUser(username));
-    }
-
-    private environmentDetails(environmentName: string) {
-        this.environments.retrieveEnvironment(environmentName);
+    public freeEnvironment(environmentName: string, user: User): void {
+        this.environments.freeEnvironment(environmentName, user);
     }
 
     private parseMessage(message: string): { environmentName: string, forceTakingEnvironment: boolean } {
-        const messageArray: string[] = message.trim().split(" ").filter(String)
+        const messageArray: string[] = message.trim().split(" ").filter(String);
         return {
             environmentName: messageArray[0],
             forceTakingEnvironment: messageArray.length > 1

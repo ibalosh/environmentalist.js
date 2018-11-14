@@ -1,5 +1,5 @@
-import { Router, Request, Response } from 'express';
-import {Manager, SlackUser} from "../../model";
+import { Router } from 'express';
+import {Manager, Response, User} from "../../model";
 
 const environmentNames = require("./../../../environments.json");
 const router: Router = Router();
@@ -22,10 +22,10 @@ router.post('/free', function (req: any, res: any) {
 
 // take one of existing environments
 router.post('/take', function (req, res) {
-    let response:any = manager.takeEnvironmentWithResponse(req.body.text, new SlackUser(req.body.user_name, req.body.user_id));
+    let response: Response = manager.takeEnvironmentAndRespond(req.body.text, new User(req.body.user_name, req.body.user_id));
 
     res.setHeader('Content-Type', 'application/json');
-    res.status(response.status).send(response.message);
+    res.status(response.statusCode).send(response.message);
 
 });
 

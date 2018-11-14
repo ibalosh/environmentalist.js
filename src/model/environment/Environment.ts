@@ -1,52 +1,32 @@
-export class SlackChannel {
-    public id: number | null;
-
-    constructor(id: number|null = null) {
-        this.id = id;
-    }
-}
-
-export class SlackUser {
-    public username: string;
-    public id: number;
-
-    constructor(username: string = '', id: number = -1) {
-        this.username = username;
-        this.id = id;
-    }
-}
-
-export class EnvironmentAvailability {
-    public taken: boolean;
-    public takenAt: Date | null;
-    public takenBy: SlackUser;
-
-    constructor(taken: boolean = false, takenAt: Date|null = null, takenBy: SlackUser = new SlackUser()) {
-        this.taken = taken;
-        this.takenAt = takenAt;
-        this.takenBy = takenBy;
-    }
-
-    public isTakenByUser(username: string): boolean {
-        return this.takenBy.username === username
-    }
-}
+import {User} from "./User";
 
 export class Environment {
-  public name: string;
-  public availability: EnvironmentAvailability;
+    public name: string;
+    public taken: boolean;
+    public takenAt: Date | null;
+    public takenBy: User;
 
-  constructor(name: string, availability: EnvironmentAvailability = new EnvironmentAvailability()) {
-    this.name = name;
-    this.availability = availability;
-  }
+    constructor(name: string) {
+        this.name = name;
+        this.taken = false;
+        this.takenAt = null;
+        this.takenBy = new User();
+    }
 
-  public isTakenByUser(username: string): boolean {
-      return this.availability.isTakenByUser(username.toString());
-  }
+    public take(user: User): void {
+        this.taken = true;
+        this.takenAt = new Date();
+        this.takenBy = user;
+    }
 
-  public isTaken(): boolean {
-        return this.availability.taken;
-  }
+    public free(): void {
+        this.taken = false;
+        this.takenAt = null;
+        this.takenBy = new User();
+    }
+
+    public getTakenByUser() {
+        return this.takenBy.username
+    }
 }
 

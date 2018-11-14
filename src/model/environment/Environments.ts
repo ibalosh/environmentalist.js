@@ -1,4 +1,7 @@
-import {Environment, EnvironmentAvailability, SlackUser} from "./environment";
+import {Environment} from "./environment";
+import {User} from "./User";
+import * as Errors from "./Errors";
+
 
 export class Environments {
     private environments: Environment[];
@@ -7,7 +10,7 @@ export class Environments {
         this.environments = [];
     }
 
-    public retrieveEnvironmentNames() {
+    public getEnvironmentNames() {
         return this.environments.map( environment => environment.name );
     }
 
@@ -15,47 +18,48 @@ export class Environments {
         this.environments.push(environment);
     }
 
-    public takeEnvironment(environmentName: string, user: SlackUser, forceTake: boolean): void {
-        const environment: Environment = this.retrieveEnvironment(environmentName);
+    public takeEnvironment(environmentName: string, user: User, forceTake: boolean): void {
         if (this.environmentIsFree(environmentName) || forceTake === true) {
-            environment.availability = new EnvironmentAvailability(true, new Date(), user);
+            this.retrieveEnvironment(environmentName).take(user);
         }
         else {
-            throw Error(`Environment ${environmentName} is already taken.`);
+            throw new Errors.TakeEnvironmentError(`Environment '${environmentName}' is already taken.`);
         }
     }
 
-    public freeEnvironment(environmentName: string, user: SlackUser): void {
-        const environment: Environment = this.retrieveEnvironment(environmentName);
-
-        if (this.isEnvironmentOwner(environmentName, user.username)) {
-            environment.availability = new EnvironmentAvailability();
+    public freeEnvironment(environmentName: string, user: User): void {
+        if (this.isEnvironmentTakenByUser(environmentName, user.username)) {
+            this.retrieveEnvironment(environmentName).free();
         }
         else if (this.environmentIsFree(environmentName)) {
-            throw Error(`Environment ${environmentName} is already free.`);
+            throw new Errors.FreeEnvironmentError(`Environment '${environmentName}' is already free.`);
         }
         else {
-            throw Error(`Environment ${environmentName} can't be freed by user ${user.username}.`);
+            throw new Errors.FreeEnvironmentError(`Environment '${environmentName}' can only be freed by user '${this.getEnvironmentTakenByUser(environmentName)}'.`);
         }
     }
 
-    public retrieveEnvironment(environmentName: string): Environment {
+    private getEnvironmentTakenByUser(environmentName: string): string {
+        return this.retrieveEnvironment(environmentName).getTakenByUser()
+    }
+
+    private isEnvironmentTakenByUser(environmentName: string, username: string): boolean {
+        return this.retrieveEnvironment(environmentName).getTakenByUser() === username;
+    }
+
+    private environmentIsFree(environmentName: string): boolean {
+        return !this.retrieveEnvironment(environmentName).taken;
+    }
+
+    private retrieveEnvironment(environmentName: string): Environment {
         const environment: Environment | undefined = this.environments.find(function (environment) {
             return environment.name === environmentName;
         });
 
         if (environment === undefined) {
-            throw Error(`Environment ${environmentName} doesn't exist. Available environments are: ${this.retrieveEnvironmentNames().join(", ")}.`);
+            throw new Errors.HabitatError(`Environment '${environmentName}' doesn't exist. Available environments are: '${this.getEnvironmentNames().join(", ")}'.`);
         } else {
             return environment;
         }
-    }
-
-    private isEnvironmentOwner(environmentName: string, username: string): boolean {
-        return this.retrieveEnvironment(environmentName).isTakenByUser(username);
-    }
-
-    private environmentIsFree(environmentName: string): boolean {
-        return !this.retrieveEnvironment(environmentName).isTaken();
     }
 }

@@ -1,5 +1,5 @@
 {
-  "name": "isitfree",
+  "name": "habitat",
   "version": "1.0.0",
   "description": "A simple Node.js app to be used with Slack for checking if staging environment is taken.",
   "license": "MITNFA",

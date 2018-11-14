@@ -4,12 +4,9 @@ const environmentNames = require("./../environments.json");
 
 const manager: model.Manager = new model.Manager(environmentNames);
 
-const user: model.SlackUser = new model.SlackUser('ibalosh', 123);
+const user: model.User = new model.User('ibalosh', 123);
 
 
-manager.takeEnvironment('staging1', user);
-manager.takeEnvironment('staging4', user);
-manager.freeEnvironment('staging4', user.username);
-manager.freeEnvironment('staging1', user.username);
-manager.freeEnvironment('staging1', user.username);
-manager.takeEnvironment('staging1', user, true);
+console.log(manager.takeEnvironmentAndRespond('staging1', user));
+console.log(manager.takeEnvironmentAndRespond('staging1', user));
+console.log(manager.freeEnvironmentAndRespond('staging1', user));
