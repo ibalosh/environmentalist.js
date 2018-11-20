@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import {ApiResponse, Manager, Response, User} from "../../handler";
+import {Manager, Response, User} from "../../handler";
 
 const router: Router = Router();
-const environmentManager: Manager = new Manager(new ApiResponse());
+const environmentManager: Manager = new Manager(new Response());
 
 router.post('/status', function (req: any, res: any) {
     let response: Response = environmentManager.environmentsStatusResponse();

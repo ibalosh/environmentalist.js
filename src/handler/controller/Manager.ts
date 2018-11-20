@@ -1,8 +1,7 @@
 import {Environment} from "../index";
 import {User} from "../index";
-import {Response, ApiResponse, SlackResponse} from "../index";
+import {Response} from "../index";
 import * as Errors from "./Errors";
-import * as moment from 'moment';
 
 interface ParsedMessage {
     environmentName: string;
@@ -10,10 +9,10 @@ interface ParsedMessage {
 }
 
 export class Manager {
-    private static environments: Environment[] = [];
+    protected static environments: Environment[] = [];
     private response: Response;
 
-    constructor(response: Response = new ApiResponse()) {
+    constructor(response: Response = new Response()) {
         this.response = response;
     }
 
@@ -22,7 +21,7 @@ export class Manager {
     }
 
     public environmentsStatusResponse():Response {
-        this.response.setResponse(JSON.stringify(this.environmentsStatus()));
+        this.response.setResponse(this.environmentsStatus());
         return this.response;
     }
 
@@ -46,7 +45,7 @@ export class Manager {
         return this.response;
     }
 
-    private environmentsStatus():Environment[] {
+    protected environmentsStatus():any {
         return Manager.environments
     }
 
