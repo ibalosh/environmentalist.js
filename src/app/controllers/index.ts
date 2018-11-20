@@ -1,1 +1,3 @@
-export {EnvironmentController} from "./environments";
+export {EnvironmentsAPI} from "./environments";
+export {EnvironmentsSlackAPI} from "./environments.slack";
+

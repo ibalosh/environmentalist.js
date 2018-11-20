@@ -6,12 +6,9 @@ import * as Errors from "./Errors";
 export class Environments {
     private environments: Environment[];
 
-    public constructor() {
+    constructor(environmentNames: string[]) {
         this.environments = [];
-    }
-
-    public getEnvironmentNames() {
-        return this.environments.map( environment => environment.name );
+        environmentNames.forEach((name: string) => { this.addEnvironment(new Environment(name)) });
     }
 
     public addEnvironment(environment: Environment) {
@@ -19,7 +16,7 @@ export class Environments {
     }
 
     public takeEnvironment(environmentName: string, user: User, forceTake: boolean): void {
-        if (this.environmentIsFree(environmentName) || forceTake === true) {
+        if (this.isEnvironmentFree(environmentName) || forceTake === true) {
             this.retrieveEnvironment(environmentName).take(user);
         }
         else {
@@ -31,24 +28,12 @@ export class Environments {
         if (this.isEnvironmentTakenByUser(environmentName, user.username)) {
             this.retrieveEnvironment(environmentName).free();
         }
-        else if (this.environmentIsFree(environmentName)) {
+        else if (this.isEnvironmentFree(environmentName)) {
             throw new Errors.FreeEnvironmentError(`Environment '${environmentName}' is already free.`);
         }
         else {
             throw new Errors.FreeEnvironmentError(`Environment '${environmentName}' can only be freed by user '${this.getEnvironmentTakenByUser(environmentName)}'.`);
         }
-    }
-
-    private getEnvironmentTakenByUser(environmentName: string): string {
-        return this.retrieveEnvironment(environmentName).getTakenByUser()
-    }
-
-    private isEnvironmentTakenByUser(environmentName: string, username: string): boolean {
-        return this.retrieveEnvironment(environmentName).getTakenByUser() === username;
-    }
-
-    private environmentIsFree(environmentName: string): boolean {
-        return !this.retrieveEnvironment(environmentName).taken;
     }
 
     private retrieveEnvironment(environmentName: string): Environment {
@@ -61,5 +46,21 @@ export class Environments {
         } else {
             return environment;
         }
+    }
+
+    private getEnvironmentTakenByUser(environmentName: string): string {
+        return this.retrieveEnvironment(environmentName).getTakenByUser()
+    }
+
+    private isEnvironmentTakenByUser(environmentName: string, username: string): boolean {
+        return this.retrieveEnvironment(environmentName).getTakenByUser() === username;
+    }
+
+    private isEnvironmentFree(environmentName: string): boolean {
+        return !this.retrieveEnvironment(environmentName).taken;
+    }
+
+    private getEnvironmentNames() {
+        return this.environments.map( environment => environment.name );
     }
 }

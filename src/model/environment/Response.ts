@@ -1,8 +1,8 @@
-export class Response {
+export abstract class Response {
     public message: string;
     public statusCode: number;
 
-    constructor(message: string = '', statusCode: number = 200) {
+    protected constructor(message: string, statusCode: number) {
         this.message = message;
         this.statusCode = statusCode;
     }
@@ -13,8 +13,27 @@ export class Response {
     }
 }
 
-export class SlackResponse extends Response {
 
+export class ApiResponse extends Response {
+    constructor(message: string = '', statusCode: number = 200) {
+        super(message, statusCode);
+    }
+
+    public setResponse(message: string, statusCode: number = 200) {
+        this.message = message;
+        this.statusCode = statusCode;
+    }
+}
+
+export class SlackResponse extends Response {
+    constructor(message: string = '', statusCode: number = 200) {
+        super(message, statusCode);
+    }
+
+    public setResponse(message: string, statusCode: number = 200) {
+        this.message = message + 'slack. aaaa.';
+        this.statusCode = statusCode;
+    }
 }
 
 

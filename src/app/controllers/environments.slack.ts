@@ -1,11 +1,9 @@
 import { Router } from 'express';
-import {Environments, Manager, Response, User} from "../../model";
+import {Manager, Response, SlackResponse, User} from "../../model";
+import {environments} from "./environments";
 
-const environmentNames = require("./../../../environments.json");
 const router: Router = Router();
-
-const environments: Environments = new Environments(environmentNames);
-const environmentManager: Manager = new Manager(environments);
+const environmentManager: Manager = new Manager(environments, new SlackResponse());
 
 router.post('/free', function (req: any, res: any) {
     let response: Response = environmentManager.freeEnvironmentAndRespond(req.body.text, new User(req.body.user_name, req.body.user_id));
@@ -21,5 +19,4 @@ router.post('/take', function (req, res) {
     res.status(response.statusCode).send(response.message);
 });
 
-export {environments};
-export const EnvironmentsAPI: Router = router;
+export const EnvironmentsSlackAPI: Router = router;

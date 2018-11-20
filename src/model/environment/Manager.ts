@@ -1,22 +1,29 @@
 import {Environment, Environments} from "../index";
 import {User} from "../index";
-import {Response} from "../index";
+import {Response, ApiResponse, SlackResponse} from "../index";
+
+interface ParsedMessage {
+    environmentName: string;
+    forceTakingEnvironment: boolean;
+}
 
 export class Manager {
-    private environments: Environments;
+    private readonly environments: Environments;
     private readonly response: Response;
 
-    constructor(environmentNames: string[]) {
-        this.environments = new Environments();
-        environmentNames.forEach((name: string) => { this.environments.addEnvironment(new Environment(name)) });
+    constructor(environments: Environments, response: Response = new ApiResponse()) {
+        this.environments = environments;
+        this.response = response;
+    }
 
-        this.response = new Response();
+    public getEnvironments(): Environments {
+        return this.environments;
     }
 
     public takeEnvironmentAndRespond(message: string, user: User): Response {
         try {
             this.takeEnvironment(message, user);
-            this.response.setResponse('Environment taken.');
+            this.response.setResponse(`Environment taken by ${user.username}.`);
         } catch(error) {
             this.response.setResponse(error.message);
         }
@@ -26,13 +33,13 @@ export class Manager {
     public freeEnvironmentAndRespond(message: string, user: User): Response {
         try {
             this.freeEnvironment(message, user);
-            this.response.setResponse('Environment freed.');
+            this.response.setResponse(`Environment freed by ${user.username}.`);
         } catch(error) {
             this.response.setResponse(error.message);
         }
         return this.response;
     }
-
+    
     public takeEnvironment(message: string, user: User): void {
         const parsedMessage = this.parseMessage(message);
         this.environments.takeEnvironment(parsedMessage.environmentName, user, parsedMessage.forceTakingEnvironment);
@@ -42,7 +49,7 @@ export class Manager {
         this.environments.freeEnvironment(environmentName, user);
     }
 
-    private parseMessage(message: string): { environmentName: string, forceTakingEnvironment: boolean } {
+    private parseMessage(message: string): ParsedMessage {
         const messageArray: string[] = message.trim().split(" ").filter(String);
         return {
             environmentName: messageArray[0],
