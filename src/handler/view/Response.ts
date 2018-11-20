@@ -8,9 +8,11 @@ export abstract class Response {
     }
 
     public setResponse(message: string, statusCode: number = 200) {
-        this.message = message;
+        this.message = this.formatResponseMessage(message);
         this.statusCode = statusCode;
     }
+
+    protected abstract formatResponseMessage(message: string): string;
 }
 
 
@@ -20,8 +22,12 @@ export class ApiResponse extends Response {
     }
 
     public setResponse(message: string, statusCode: number = 200) {
-        this.message = message;
+        this.message = this.formatResponseMessage(message);
         this.statusCode = statusCode;
+    }
+
+    protected formatResponseMessage(message:string): string {
+        return message;
     }
 }
 
@@ -31,8 +37,13 @@ export class SlackResponse extends Response {
     }
 
     public setResponse(message: string, statusCode: number = 200) {
-        this.message = message + 'slack. aaaa.';
+        console.log(message);
+        this.message = this.formatResponseMessage(message);
         this.statusCode = statusCode;
+    }
+
+    protected formatResponseMessage(message:string): string {
+        return message.replace(/"/g,"*");
     }
 }
 

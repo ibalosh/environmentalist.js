@@ -1,6 +1,10 @@
 import * as express from 'express';
 import * as bodyParser from "body-parser"
 import {EnvironmentsAPI, EnvironmentsSlackAPI} from './controllers';
+import {Manager} from "../handler";
+
+const environmentNames = require("./../../environments.json");
+Manager.initEnvironments(environmentNames);
 
 const app: express.Application = express();
 const port: number = 3002;
