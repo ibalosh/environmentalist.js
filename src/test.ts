@@ -1,10 +1,11 @@
-import * as model from "./model";
+import * as habitat from "./handler";
 
 const environmentNames = require("./../environments.json");
 
-const manager: model.Manager = new model.Manager(environmentNames);
+const manager: habitat.Manager = new habitat.Manager();
+habitat.Manager.initEnvironments(environmentNames);
 
-const user: model.User = new model.User('ibalosh', 123);
+const user: habitat.User = new habitat.User('ibalosh', 123);
 
 
 console.log(manager.takeEnvironmentAndRespond('staging1', user));
