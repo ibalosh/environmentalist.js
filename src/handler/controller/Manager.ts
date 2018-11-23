@@ -10,7 +10,7 @@ interface ParsedMessage {
 
 export class Manager {
     protected static environments: Environment[] = [];
-    private response: Response;
+    protected response: Response;
 
     constructor(response: Response = new Response()) {
         this.response = response;
@@ -26,19 +26,23 @@ export class Manager {
     }
 
     public takeEnvironmentAndRespond(message: string, user: User): Response {
+        const parsedMessage = this.parseMessage(message);
+        const environmentName = parsedMessage.environmentName;
+        const forceTakingEnvironment = parsedMessage.forceTakingEnvironment;
+
         try {
-            this.takeEnvironment(message, user);
-            this.response.setResponse(`Environment taken by "${user.username}".`);
+            this.takeEnvironment(environmentName, user, forceTakingEnvironment);
+            this.response.setResponse(`Environment "${environmentName}" taken by "${user.username}".`);
         } catch(error) {
             this.response.setResponse(error.message);
         }
         return this.response;
     }
 
-    public freeEnvironmentAndRespond(message: string, user: User): Response {
+    public freeEnvironmentAndRespond(environmentName: string, user: User): Response {
         try {
-            this.freeEnvironment(message, user);
-            this.response.setResponse(`Environment freed by "${user.username}".`);
+            this.freeEnvironment(environmentName, user);
+            this.response.setResponse(`Environment "${environmentName}" freed by "${user.username}".`);
         } catch(error) {
             this.response.setResponse(error.message);
         }
@@ -49,12 +53,8 @@ export class Manager {
         return Manager.environments
     }
 
-    private takeEnvironment(message: string, user: User): void {
-        const parsedMessage = this.parseMessage(message);
-        const environmentName = parsedMessage.environmentName;
-        const forceTake = parsedMessage.forceTakingEnvironment;
-
-        if (this.isEnvironmentFree(environmentName) || forceTake === true) {
+    private takeEnvironment(environmentName: string, user: User, forceTakingEnvironment: boolean): void {
+        if (this.isEnvironmentFree(environmentName) || forceTakingEnvironment === true) {
             this.retrieveEnvironment(environmentName).take(user);
         }
         else {
@@ -80,7 +80,6 @@ export class Manager {
             environmentName: messageArray[0],
             forceTakingEnvironment: messageArray.length > 1
         }
-
     }
 
     private retrieveEnvironment(environmentName: string): Environment {

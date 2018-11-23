@@ -1,4 +1,4 @@
-import {Environment, Manager, Response} from "../index";
+import {Environment, Manager, Response, User} from "../index";
 import * as moment from 'moment';
 
 enum SlackColor {
@@ -50,6 +50,12 @@ export class SlackManager extends Manager {
     constructor(response: Response = new Response()) {
         super(response);
         this.respondInChannel = false;
+    }
+
+    public takeEnvironmentAndRespond(message: string, user: User): Response {
+        super.takeEnvironmentAndRespond(message, user);
+        this.response.message = this.response.message.replace(/"/g,"*");
+        return this.response;
     }
 
     protected environmentsStatus():any {
