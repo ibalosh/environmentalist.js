@@ -1,4 +1,4 @@
-import {Environment, Manager} from "../index";
+import {Environment, Manager, Response} from "../index";
 import * as moment from 'moment';
 
 enum SlackColor {
@@ -28,12 +28,30 @@ class SlackAttachmentField {
     }
 }
 
+enum SlackResponseType {
+    VISIBLE_TO_PUBLIC = 'in_channel',
+    HIDDEN_TO_PUBLIC = ''
+}
+
 class SlackMessage {
     text?: string;
     attachments?: SlackAttachment[];
+    response_type?: string;
+
+    constructor(responseType: string = SlackResponseType.HIDDEN_TO_PUBLIC) {
+        this.response_type = responseType;
+    }
 }
 
 export class SlackManager extends Manager {
+
+    public respondInChannel: boolean;
+
+    constructor(response: Response = new Response()) {
+        super(response);
+        this.respondInChannel = false;
+    }
+
     protected environmentsStatus():any {
         let that = this;
         let attachments: SlackAttachment[] = [];

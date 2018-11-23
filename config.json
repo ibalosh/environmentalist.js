@@ -1,6 +1,9 @@
-[
+{
+  "environmentNames": [
     "production",
     "staging1",
     "staging2",
     "staging3"
-]
+  ],
+  "port":3002
+}

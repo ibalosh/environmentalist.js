@@ -2,7 +2,8 @@ import * as habitat from "./handler";
 
 const environmentNames = require("./../environments.json");
 
-const manager: habitat.Manager = new habitat.Manager();
+//const manager: habitat.Manager = new habitat.Manager();
+const manager: habitat.SlackManager = new habitat.SlackManager();
 habitat.Manager.initEnvironments(environmentNames);
 
 const user: habitat.User = new habitat.User('ibalosh', 123);

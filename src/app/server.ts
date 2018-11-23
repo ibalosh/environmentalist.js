@@ -3,11 +3,11 @@ import * as bodyParser from "body-parser"
 import {EnvironmentsAPI, EnvironmentsSlackAPI} from './controllers';
 import {Manager} from "../handler";
 
-const environmentNames = require("./../../environments.json");
-Manager.initEnvironments(environmentNames);
+const config = require("./../../config.json");
+Manager.initEnvironments(config.environmentNames);
 
 const app: express.Application = express();
-const port: number = 3002;
+const port: number = config.port;
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
