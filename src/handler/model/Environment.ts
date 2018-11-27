@@ -1,4 +1,5 @@
 import {User} from "./User";
+import {HabitatError} from "..";
 
 export class Environment {
     public name: string;
@@ -25,8 +26,8 @@ export class Environment {
         this.takenBy = new User();
     }
 
-    public getTakenByUser() {
-        return this.takenBy.username
+    public isTakenBy(username: string) {
+        return this.takenBy.username === username;
     }
 }
 

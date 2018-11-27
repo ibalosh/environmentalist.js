@@ -88,7 +88,7 @@ export class Manager {
         });
 
         if (environment === undefined) {
-            throw new Errors.HabitatError(`Environment '${environmentName}' doesn't exist. Available environments are: "${this.getEnvironmentNames().join(", ")}".`);
+            throw new Errors.HabitatError(`Environment '${environmentName}' doesn't exist.`);
         } else {
             return environment;
         }
