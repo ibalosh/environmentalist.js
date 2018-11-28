@@ -1,5 +1,6 @@
-import {Environment, Manager, Response, User} from "../index";
-import * as moment from 'moment';
+import {ApiResponse, Response} from "./Response";
+import {Environment, User} from "..";
+import moment = require("moment");
 
 enum SlackColor {
     GREEN = "#36a64f",
@@ -43,28 +44,44 @@ class SlackMessage {
     }
 }
 
-export class SlackManager extends Manager {
+export class SlackResponse extends ApiResponse {
 
-    public respondInChannel: boolean;
-
-    constructor(response: Response = new Response()) {
-        super(response);
-        this.respondInChannel = false;
+    private formatApiMessageForSlack(): void {
+        this.message = this.message.replace(/"/g,'*');
     }
 
-    public takeEnvironmentAndRespond(message: string, user: User): Response {
-        super.takeEnvironmentAndRespond(message, user);
-        this.response.message = this.response.message.replace(/"/g,"*");
-        return this.response;
+    public generateTakeMessage(environmentName: string, user: User): void {
+        super.generateTakeMessage(environmentName, user);
+        this.formatApiMessageForSlack();
     }
 
-    protected environmentsStatus():any {
+    public generateAlreadyTakenMessage(environment: Environment, user: User): void {
+        super.generateAlreadyTakenMessage(environment, user);
+        this.formatApiMessageForSlack();
+    }
+
+    public generateFreeMessage(environmentName: string, user: User): void {
+        super.generateFreeMessage(environmentName, user);
+        this.formatApiMessageForSlack();
+    }
+
+    public generateDeniedFreeMessage(environment: Environment): void {
+        super.generateDeniedFreeMessage(environment);
+        this.formatApiMessageForSlack();
+    }
+
+    public generateNotExistingEnvironmentMessage(environmentName: string, environmentNames: string[]) {
+        super.generateNotExistingEnvironmentMessage(environmentName, environmentNames);
+        this.formatApiMessageForSlack();
+    }
+
+    public generateEnvironmentStatusMessage(environments: Environment[]) {
         let that = this;
         let attachments: SlackAttachment[] = [];
         let data: SlackMessage = new SlackMessage();
         data.text =  "Environments status";
 
-        Manager.environments.forEach(function(environment: Environment){
+        environments.forEach(function(environment: Environment){
             let color: SlackColor;
             let text: string;
 
@@ -75,8 +92,8 @@ export class SlackManager extends Manager {
             else {
                 color = SlackColor.RED;
                 if (environment.takenAt === null) { environment.takenAt = new Date(); }
-
-                text = `taken by: ${environment.takenBy.username} at ${moment(environment.takenAt.toString()).utcOffset('-0500').format('MMMM DD - HH:mm A')} EST`;
+                const timeString: string = moment(environment.takenAt).utcOffset('-0500').format('MMMM DD - HH:mm A');
+                text = `taken by: ${environment.takenBy.username} at ${timeString} EST`;
             }
 
             let attachment: SlackAttachment = that.createAttachment(color,environment.name,text);
@@ -84,7 +101,7 @@ export class SlackManager extends Manager {
         });
 
         data.attachments = attachments;
-        return data;
+        this.message = data;
     }
 
     private createAttachment(color: SlackColor, title: string, value: string): SlackAttachment {
@@ -97,4 +114,5 @@ export class SlackManager extends Manager {
     private createAttachmentField(title: string, value: string): SlackAttachmentField {
         return new SlackAttachmentField(title, value);
     }
+
 }

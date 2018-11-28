@@ -26,18 +26,27 @@ export class HabitatError extends Error {
     }
 }
 
-export class TakeEnvironmentError extends HabitatError {
+export class EnvironmentNotExistingError extends HabitatError {
     constructor(message: string) {
         super(message, ErrorCodes.TakeEnvironmentError);
-        Object.setPrototypeOf(this, TakeEnvironmentError.prototype);
+        Object.setPrototypeOf(this, EnvironmentNotExistingError.prototype);
         this.setUpStackTrace();
     }
 }
 
-export class FreeEnvironmentError extends HabitatError {
+
+export class EnvironmentAlreadyTakenError extends HabitatError {
+    constructor(message: string) {
+        super(message, ErrorCodes.TakeEnvironmentError);
+        Object.setPrototypeOf(this, EnvironmentAlreadyTakenError.prototype);
+        this.setUpStackTrace();
+    }
+}
+
+export class EnvironmentFreeError extends HabitatError {
     constructor(message: string) {
         super(message, ErrorCodes.FreeEnvironmentError);
-        Object.setPrototypeOf(this, FreeEnvironmentError.prototype);
+        Object.setPrototypeOf(this, EnvironmentFreeError.prototype);
         this.setUpStackTrace();
     }
 }

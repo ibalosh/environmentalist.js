@@ -1,5 +1,6 @@
 import {User} from "./User";
-import {HabitatError} from "..";
+import {EnvironmentFreeError, HabitatError, EnvironmentAlreadyTakenError} from "..";
+
 
 export class Environment {
     public name: string;
@@ -14,20 +15,27 @@ export class Environment {
         this.takenBy = new User();
     }
 
-    public take(user: User): void {
-        this.taken = true;
-        this.takenAt = new Date();
-        this.takenBy = user;
+    public take(user: User, takeByForce: boolean): void {
+        if (this.taken === false || takeByForce === true) {
+            this.taken = true;
+            this.takenAt = new Date();
+            this.takenBy = user;
+        }
+        else {
+            throw new EnvironmentAlreadyTakenError(`Environment "${this.name}" is already taken.`)
+        }
     }
 
-    public free(): void {
-        this.taken = false;
-        this.takenAt = null;
-        this.takenBy = new User();
-    }
+    public free(user: User): void {
+        if (this.taken === false || this.takenBy.username === user.username) {
+            this.taken = false;
+            this.takenAt = null;
+            this.takenBy = new User();
+        }
+        else {
+            throw new EnvironmentFreeError(`Environment "${this.name}" can only be freed by ${this.takenBy.username}.`)
+        }
 
-    public isTakenBy(username: string) {
-        return this.takenBy.username === username;
     }
 }
 
