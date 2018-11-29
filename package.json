@@ -1,7 +1,7 @@
 {
   "name": "habitat",
   "version": "1.0.0",
-  "description": "A simple Node.js app to be used with Slack for checking if staging environment is taken.",
+  "description": "A simple Node.js app to be used with Slack for managing environment occupancy.",
   "license": "MITNFA",
   "main": "./dist/app/server.js",
   "directories": {
@@ -17,10 +17,8 @@
     "typescript": "^2.7.2"
   },
   "dependencies": {
-    "axios": "^0.18.0",
     "body-parser": "^1.18.2",
     "@types/express": "^4.16.0",
-    "js-yaml": "^3.11.0",
     "moment": "^2.22.1",
     "express": "^4.16.4"
   },
@@ -31,10 +29,10 @@
   "author": "Igor Balos",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ibalosh/isitfree.git"
+    "url": "git+https://github.com/ibalosh/habitat.git"
   },
   "bugs": {
-    "url": "https://github.com/ibalosh/isitfree/issues"
+    "url": "https://github.com/ibalosh/habitat/issues"
   },
-  "homepage": "https://github.com/ibalosh/isitfree#readme"
+  "homepage": "https://github.com/ibalosh/habitat#readme"
 }
