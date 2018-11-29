@@ -49,7 +49,8 @@ export class SlackResponse extends ApiResponse {
 
     private formatApiMessageForSlack(response_type: SlackResponseType = SlackResponseType.HIDDEN_TO_PUBLIC): void {
         this.message = this.message.replace(/"/g,'*');
-        this.message = new SlackMessage(this.message, response_type);
+        let data: SlackMessage = new SlackMessage(this.message, response_type);
+        this.message = JSON.stringify(data);
     }
 
     public generateTakeMessage(environmentName: string, user: User): void {
@@ -102,7 +103,7 @@ export class SlackResponse extends ApiResponse {
         });
 
         data.attachments = attachments;
-        this.message = data;
+        this.message = JSON.stringify(data);
     }
 
     private createAttachment(color: SlackColor, title: string, value: string): SlackAttachment {
