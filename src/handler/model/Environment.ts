@@ -1,7 +1,6 @@
 import {User} from "./User";
 import {EnvironmentFreeError, HabitatError, EnvironmentAlreadyTakenError} from "..";
 
-
 export class Environment {
     public name: string;
     public taken: boolean;

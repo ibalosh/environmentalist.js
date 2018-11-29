@@ -35,19 +35,21 @@ enum SlackResponseType {
 }
 
 class SlackMessage {
-    text?: string;
+    text: string;
     attachments?: SlackAttachment[];
-    response_type?: string;
+    response_type: SlackResponseType;
 
-    constructor(responseType: string = SlackResponseType.HIDDEN_TO_PUBLIC) {
+    constructor(text: string, responseType: SlackResponseType = SlackResponseType.HIDDEN_TO_PUBLIC) {
         this.response_type = responseType;
+        this.text = text;
     }
 }
 
 export class SlackResponse extends ApiResponse {
 
-    private formatApiMessageForSlack(): void {
+    private formatApiMessageForSlack(response_type: SlackResponseType = SlackResponseType.HIDDEN_TO_PUBLIC): void {
         this.message = this.message.replace(/"/g,'*');
+        this.message = new SlackMessage(this.message, response_type);
     }
 
     public generateTakeMessage(environmentName: string, user: User): void {
@@ -78,8 +80,7 @@ export class SlackResponse extends ApiResponse {
     public generateEnvironmentStatusMessage(environments: Environment[]) {
         let that = this;
         let attachments: SlackAttachment[] = [];
-        let data: SlackMessage = new SlackMessage();
-        data.text =  "Environments status";
+        let data: SlackMessage = new SlackMessage("Environments status");
 
         environments.forEach(function(environment: Environment){
             let color: SlackColor;
