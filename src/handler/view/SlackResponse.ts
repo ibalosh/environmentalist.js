@@ -45,6 +45,9 @@ class SlackMessage {
     }
 }
 
+/**
+ * Response model adjusted to match Slack.
+ */
 export class SlackResponse extends ApiResponse {
 
     private formatApiMessageForSlack(response_type: SlackResponseType = SlackResponseType.HIDDEN_TO_PUBLIC): void {

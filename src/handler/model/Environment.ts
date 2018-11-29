@@ -1,5 +1,5 @@
 import {User} from "./User";
-import {EnvironmentFreeError, HabitatError, EnvironmentAlreadyTakenError} from "..";
+import {EnvironmentFreeError, EnvironmentAlreadyTakenError} from "..";
 
 export class Environment {
     public name: string;

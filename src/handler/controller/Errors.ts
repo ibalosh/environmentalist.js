@@ -5,7 +5,7 @@ enum ErrorCodes {
 }
 
 /**
- * Standard Habitat error on which all sub-errors are based.
+ * Standard error on which all sub-errors of the app are based.
  **/
 export class HabitatError extends Error {
     public code: number;
@@ -33,7 +33,6 @@ export class EnvironmentNotExistingError extends HabitatError {
         this.setUpStackTrace();
     }
 }
-
 
 export class EnvironmentAlreadyTakenError extends HabitatError {
     constructor(message: string) {

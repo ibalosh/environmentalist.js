@@ -1,5 +1,9 @@
 import {Environment, User} from "..";
 
+/**
+ * Represents the base model for the reponse which is going to be made by a service,
+ * whether that response is API, or Slack API etc.
+ */
 export abstract class Response {
     public message: any;
     public statusCode: number;
@@ -21,7 +25,6 @@ export abstract class Response {
 
     public abstract generateEnvironmentStatusMessage(environments: Environment[]): void;
 }
-
 
 export class ApiResponse extends Response {
     public generateTakeMessage(environmentName: string, user: User): void {
