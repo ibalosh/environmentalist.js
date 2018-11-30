@@ -1,18 +1,9 @@
-enum ErrorCodes {
-    Default = 500,
-    TakeEnvironmentError = 601,
-    FreeEnvironmentError = 701
-}
-
 /**
  * Standard error on which all sub-errors of the app are based.
  **/
 export class HabitatError extends Error {
-    public code: number;
-
-    constructor(message: string, code: number = ErrorCodes.Default) {
+    constructor(message: string) {
         super(message);
-        this.code = code;
 
         // this is mandatory due:
         // https://github.com/Microsoft/TypeScript/wiki/Breaking-Changes#extending-built-ins-like-error-array-and-map-may-no-longer-work
@@ -28,7 +19,7 @@ export class HabitatError extends Error {
 
 export class EnvironmentNotExistingError extends HabitatError {
     constructor(message: string) {
-        super(message, ErrorCodes.TakeEnvironmentError);
+        super(message);
         Object.setPrototypeOf(this, EnvironmentNotExistingError.prototype);
         this.setUpStackTrace();
     }
@@ -36,7 +27,7 @@ export class EnvironmentNotExistingError extends HabitatError {
 
 export class EnvironmentAlreadyTakenError extends HabitatError {
     constructor(message: string) {
-        super(message, ErrorCodes.TakeEnvironmentError);
+        super(message);
         Object.setPrototypeOf(this, EnvironmentAlreadyTakenError.prototype);
         this.setUpStackTrace();
     }
@@ -44,7 +35,7 @@ export class EnvironmentAlreadyTakenError extends HabitatError {
 
 export class EnvironmentFreeError extends HabitatError {
     constructor(message: string) {
-        super(message, ErrorCodes.FreeEnvironmentError);
+        super(message);
         Object.setPrototypeOf(this, EnvironmentFreeError.prototype);
         this.setUpStackTrace();
     }

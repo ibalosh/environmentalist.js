@@ -1,4 +1,4 @@
-import {ApiResponse, Response} from "./Response";
+import {ApiResponse} from "./Response";
 import {Environment, User} from "..";
 import moment = require("moment");
 

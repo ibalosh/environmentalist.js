@@ -34,7 +34,6 @@ export class Environment {
         else {
             throw new EnvironmentFreeError(`Environment "${this.name}" can only be freed by ${this.takenBy.username}.`)
         }
-
     }
 }
 
