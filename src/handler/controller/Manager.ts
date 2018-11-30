@@ -23,8 +23,18 @@ export class Manager {
      * @param {string[]} environmentNames - names of environments
      */
     public static initEnvironments(environmentNames: string[]) {
+        Manager.environments = [];
         environmentNames.forEach((environmentName: string) => {
             Manager.environments.push(new Environment(environmentName)) });
+    }
+
+    /**
+     * Retrieve environment names.
+     *
+     * @returns {string[]} - environment names
+     */
+    public getEnvironmentNames(): string[] {
+        return Manager.environments.map( environment => environment.name );
     }
 
     /**
@@ -123,15 +133,6 @@ export class Manager {
                 throw error;
                 break;
         }
-    }
-
-    /**
-     * Retrieve environment names.
-     *
-     * @returns {string[]} - environment names
-     */
-    private getEnvironmentNames(): string[] {
-        return Manager.environments.map( environment => environment.name );
     }
 
     /**

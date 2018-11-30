@@ -1,31 +1,58 @@
 import { expect } from 'chai';
 import 'mocha';
-import * as model from "../src/model";
+import {Habitat} from '../src'
 
 describe('Manager', () => {
+    const environmentNames: string[] = ['test1', 'test2'];
+    let manager: Habitat.Manager;
+    let user: Habitat.User;
 
-    const environmentNames = require("./../environments.json");
+    beforeEach(() => {
+        Habitat.Manager.initEnvironments(environmentNames);
+        manager = new Habitat.Manager(new Habitat.ApiResponse());
+        user = new Habitat.User('ibalosh', 100);
+    });
 
-    describe('takeEnvironment', () => {
-        it('already taken', () => {
-            const username: string = 'ibalosh';
-            const userId: number = 123;
-            const environmentName = environmentNames[0];
-            const manager: model.Manager = new model.Manager(environmentNames);
-            const user: model.User = new model.User(username, userId);
-
-            manager.takeEnvironment(environmentName, user);
-            expect(() => manager.takeEnvironment(environmentNames[0], user)).to.throw(/Environment.*is already taken./)
+    describe('API response', () => {
+        beforeEach(() => {
+            Habitat.Manager.initEnvironments(environmentNames);
+            manager = new Habitat.Manager(new Habitat.ApiResponse());
         });
 
-        it('non existing', () => {
-            const username: string = 'ibalosh';
-            const userId: number = 123;
-            const manager: model.Manager = new model.Manager(environmentNames);
-            const user: model.User = new model.User(username, userId);
-
-            expect(() => manager.takeEnvironment('non-existing', user)).to.throw(/Environment.* doesn't exist.*/)
+        it('takeEnvironment', () => {
+            const environmentToTake: string = environmentNames[0];
+            let response: Habitat.ApiResponse = manager.takeEnvironment(environmentToTake, user, false);
+            expect(response.message).to.eq(`Environment "${environmentToTake}" taken by "${user.username}".`)
         });
     });
 
+    describe('Slack response', () => {
+        beforeEach(() => {
+            Habitat.Manager.initEnvironments(environmentNames);
+            manager = new Habitat.Manager(new Habitat.SlackResponse());
+        });
+
+        it('takeEnvironment', () => {
+            const environmentToTake: string = environmentNames[0];
+            let response: Habitat.ApiResponse = manager.takeEnvironment(environmentToTake, user, false);
+            expect(response.message).to.eq(`{"response_type":"","text":"Environment *${environmentToTake}* taken by *${user.username}*."}`)
+        });
+    });
+
+    it('getEnvironmentNames', () => {
+        expect(manager.getEnvironmentNames()).to.eql(environmentNames);
+    });
+
+    describe('initEnvironment', () => {
+        it('regular', () => {
+            Habitat.Manager.initEnvironments(environmentNames);
+            expect(manager.getEnvironmentNames()).to.eql(environmentNames);
+        });
+
+        it('overwrite', () => {
+            const newEnvironmentNames: string[] = ['test1new', 'test2new'];
+            Habitat.Manager.initEnvironments(newEnvironmentNames);
+            expect(manager.getEnvironmentNames()).to.eql(newEnvironmentNames);
+        });
+    });
 });
