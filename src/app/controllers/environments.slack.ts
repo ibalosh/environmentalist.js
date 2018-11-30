@@ -9,7 +9,9 @@ const environmentManager: habitat.Manager = new habitat.Manager(new habitat.Slac
  */
 router.post('/status', function (req: Request, res: Response) {
     let response: habitat.Response = environmentManager.environmentStatus();
-    res.status(response.statusCode).json(response.message);
+
+    res.setHeader('Content-Type', 'application/json');
+    res.status(response.statusCode).send(response.message);
 });
 
 /**
@@ -19,7 +21,8 @@ router.post('/free', function (req: Request, res: Response) {
     let response: habitat.Response = environmentManager.freeEnvironment(
         req.body.text, new habitat.User(req.body.user_name, req.body.user_id));
 
-    res.status(response.statusCode).json(response.message);
+    res.setHeader('Content-Type', 'application/json');
+    res.status(response.statusCode).send(response.message);
 });
 
 /**
@@ -29,7 +32,8 @@ router.post('/take', function (req: Request, res: Response) {
     let response: habitat.Response = environmentManager.takeEnvironmentByMessage(
         req.body.text, new habitat.User(req.body.user_name, req.body.user_id));
 
-    res.status(response.statusCode).json(response.message);
+    res.setHeader('Content-Type', 'application/json');
+    res.status(response.statusCode).send(response.message);
 });
 
 export const EnvironmentsSlackAPI: Router = router;
