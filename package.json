@@ -20,7 +20,8 @@
     "body-parser": "^1.18.2",
     "@types/express": "^4.16.0",
     "moment": "^2.22.1",
-    "express": "^4.16.4"
+    "express": "^4.16.4",
+    "axios": "^0.18.0"
   },
   "scripts": {
     "compile": "rm -r -f ./dist && node_modules/.bin/tsc",

@@ -1,5 +1,6 @@
 import {Router, Response, Request} from 'express';
 import * as habitat from "../../handler";
+import {Slack} from "../../index";
 
 const router: Router = Router();
 const environmentManager: habitat.Manager = new habitat.Manager(new habitat.ApiResponse());
@@ -29,11 +30,16 @@ router.post('/free', function (req: Request, res: Response) {
  * Take environment route.
  */
 router.post('/take', function (req: Request, res: Response) {
-    let response: habitat.Response = environmentManager.takeEnvironmentByMessage(
-        req.body.text, new habitat.User(req.body.user_name, req.body.user_id));
+    let slack: Slack = new Slack();
+    slack.findUserByEmail(req.body.user_email).then( (slackResponse: any) => {
+        req.body.user_id = slackResponse.user.id;
 
-    res.setHeader('Content-Type', 'application/json');
-    res.status(response.statusCode).send(response.message);
+        let response: habitat.Response = environmentManager.takeEnvironmentByMessage(
+            req.body.text, new habitat.User(req.body.user_name, req.body.user_id));
+
+        res.setHeader('Content-Type', 'application/json');
+        res.status(response.statusCode).send(response.message);
+    });
 });
 
 export const EnvironmentsAPI: Router = router;

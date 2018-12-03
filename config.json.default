@@ -5,6 +5,16 @@
     "staging2",
     "staging3"
   ],
-  "port": 3002,
-  "host": "http://localhost"
+  "server": {
+    "port": 3002,
+    "host": "http://localhost"
+  },
+  "slack": {
+    "url": "https://slack.com",
+    "auth_header": "Bearer xoxp-test-test-test-test",
+    "endpoints": {
+      "usersList": "/api/users.list",
+      "userByEmail": "/api/users.lookupByEmail"
+    }
+  }
 }
