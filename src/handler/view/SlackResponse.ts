@@ -35,9 +35,10 @@ enum SlackResponseType {
 }
 
 class SlackMessage {
-    text: string;
-    attachments?: SlackAttachment[];
-    response_type: SlackResponseType;
+    public text: string;
+    public attachments?: SlackAttachment[];
+    public response_type: SlackResponseType;
+    public channel?: string;
 
     constructor(text: string, responseType: SlackResponseType = SlackResponseType.HIDDEN_TO_PUBLIC) {
         this.response_type = responseType;
@@ -63,7 +64,10 @@ export class SlackResponse extends ApiResponse {
 
     public generateAlreadyTakenMessage(environment: Environment, user: User): void {
         super.generateAlreadyTakenMessage(environment, user);
-        this.formatApiMessageForSlack();
+        this.message = this.message.replace(/"/g,'*');
+        let data: SlackMessage = new SlackMessage(this.message, SlackResponseType.VISIBLE_TO_PUBLIC);
+        data.channel = environment.takenBy.id;
+        this.message = JSON.stringify(data);
     }
 
     public generateFreeMessage(environmentName: string, user: User): void {

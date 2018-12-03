@@ -1,8 +1,8 @@
 export class User {
     public username: string;
-    public id: number;
+    public id: string;
 
-    constructor(username: string = '', id: number = -1) {
+    constructor(username: string = '', id: string = '') {
         this.username = username;
         this.id = id;
     }
