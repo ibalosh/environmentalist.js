@@ -33,6 +33,7 @@ router.post('/take', function (req: Request, res: Response) {
     let slack: Slack = new Slack();
     slack.findUserByEmail(req.body.user_email).then( (slackResponse: any) => {
         req.body.user_id = slackResponse.user.id;
+        req.body.user_name = slackResponse.user.name;
 
         let response: habitat.Response = environmentManager.takeEnvironmentByMessage(
             req.body.text, new habitat.User(req.body.user_name, req.body.user_id));
