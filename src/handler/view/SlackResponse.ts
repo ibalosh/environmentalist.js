@@ -64,10 +64,7 @@ export class SlackResponse extends ApiResponse {
 
     public generateAlreadyTakenMessage(environment: Environment, user: User): void {
         super.generateAlreadyTakenMessage(environment, user);
-        this.message = this.message.replace(/"/g,'*');
-        let data: SlackMessage = new SlackMessage(this.message, SlackResponseType.VISIBLE_TO_PUBLIC);
-        data.channel = environment.takenBy.id;
-        this.message = JSON.stringify(data);
+        this.formatApiMessageForSlack(SlackResponseType.VISIBLE_TO_PUBLIC);
     }
 
     public generateFreeMessage(environmentName: string, user: User): void {
