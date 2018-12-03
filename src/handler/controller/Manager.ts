@@ -11,7 +11,7 @@ interface IParsedTakeEnvironmentMessage {
  * For example if environment is taken, it should handle this action and return proper response to API.
  */
 export class Manager {
-    protected static environments: Environment[] = [];
+    public static environments: Environment[] = [];
     protected response: Response;
 
     constructor(response: Response) {
@@ -150,6 +150,10 @@ export class Manager {
     }
 
     private handleEnvironmentRetrieval(environmentFound: Environment | undefined, environmentName: string) {
+        if (Manager.environments.length < 1) {
+            throw new Errors.HabitatError('Environments are not initialized.');
+        }
+
         if (environmentFound === undefined) {
             throw new Errors.EnvironmentNotExistingError(`Environment '${environmentName}' doesn't exist.`);
         } else {

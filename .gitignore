@@ -15,5 +15,6 @@ temp
 **/*.idea
 **/*.iml
 src/test.ts
+config.json
 
 
