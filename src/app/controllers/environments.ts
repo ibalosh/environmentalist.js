@@ -1,15 +1,15 @@
 import {Router, Response, Request} from 'express';
-import * as habitat from "../../handler";
+import * as Environmentalist from "../../handler";
 import {Slack} from "../../index";
 
 const router: Router = Router();
-const environmentManager: habitat.Manager = new habitat.Manager(new habitat.ApiResponse());
+const environmentManager: Environmentalist.Manager = new Environmentalist.Manager(new Environmentalist.ApiResponse());
 
 /**
  * Environments status route.
  */
 router.post('/status', function (req: Request, res: Response) {
-    let response: habitat.Response = environmentManager.environmentStatus();
+    let response: Environmentalist.Response = environmentManager.environmentStatus();
     
     res.setHeader('Content-Type', 'application/json');
     res.status(response.statusCode).send(response.message);
@@ -19,8 +19,8 @@ router.post('/status', function (req: Request, res: Response) {
  * Free environment route.
  */
 router.post('/free', function (req: Request, res: Response) {
-    let response: habitat.Response = environmentManager.freeEnvironment(
-        req.body.text, new habitat.User(req.body.user_name, req.body.user_id));
+    let response: Environmentalist.Response = environmentManager.freeEnvironment(
+        req.body.text, new Environmentalist.User(req.body.user_name, req.body.user_id));
 
     res.setHeader('Content-Type', 'application/json');
     res.status(response.statusCode).send(response.message);
@@ -35,8 +35,8 @@ router.post('/take', function (req: Request, res: Response) {
         req.body.user_id = slackResponse.user.id;
         req.body.user_name = slackResponse.user.name;
 
-        let response: habitat.Response = environmentManager.takeEnvironmentByMessage(
-            req.body.text, new habitat.User(req.body.user_name, req.body.user_id));
+        let response: Environmentalist.Response = environmentManager.takeEnvironmentByMessage(
+            req.body.text, new Environmentalist.User(req.body.user_name, req.body.user_id));
 
         res.setHeader('Content-Type', 'application/json');
         res.status(response.statusCode).send(response.message);

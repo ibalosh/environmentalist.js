@@ -1,5 +1,5 @@
 {
-  "name": "habitat",
+  "name": "environmentalist",
   "version": "1.0.0",
   "description": "A simple Node.js app to be used with Slack for managing environment occupancy.",
   "license": "MITNFA",
@@ -30,10 +30,10 @@
   "author": "Igor Balos",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ibalosh/habitat.git"
+    "url": "git+https://github.com/ibalosh/environmentalist.git"
   },
   "bugs": {
-    "url": "https://github.com/ibalosh/habitat/issues"
+    "url": "https://github.com/ibalosh/environmentalist/issues"
   },
-  "homepage": "https://github.com/ibalosh/habitat#readme"
+  "homepage": "https://github.com/ibalosh/environmentalist#readme"
 }

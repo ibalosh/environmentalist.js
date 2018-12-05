@@ -114,11 +114,11 @@ export class Manager {
     /**
      * Handle gracefully errors that could happen while managing environments, like when environment doesn't exist.
      *
-     * @param {HabitatError} error - error to be handled
+     * @param {EnvironmentalistError} error - error to be handled
      * @param {string} environmentName - environment on which error happened by name
      * @param {User} user - user that caused error
      */
-    private handleErrors(error: Errors.HabitatError, environmentName: string, user: User): void {
+    private handleErrors(error: Errors.EnvironmentalistError, environmentName: string, user: User): void {
         switch (error.name) {
             case Errors.EnvironmentNotExistingError.name:
                 this.response.generateNotExistingEnvironmentMessage(environmentName, this.getEnvironmentNames());
@@ -151,7 +151,7 @@ export class Manager {
 
     private handleEnvironmentRetrieval(environmentFound: Environment | undefined, environmentName: string) {
         if (Manager.environments.length < 1) {
-            throw new Errors.HabitatError('Environments are not initialized.');
+            throw new Errors.EnvironmentalistError('Environments are not initialized.');
         }
 
         if (environmentFound === undefined) {

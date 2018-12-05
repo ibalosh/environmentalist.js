@@ -1,13 +1,13 @@
 /**
  * Standard error on which all sub-errors of the app are based.
  **/
-export class HabitatError extends Error {
+export class EnvironmentalistError extends Error {
     constructor(message: string) {
         super(message);
 
         // this is mandatory due:
         // https://github.com/Microsoft/TypeScript/wiki/Breaking-Changes#extending-built-ins-like-error-array-and-map-may-no-longer-work
-        Object.setPrototypeOf(this, HabitatError.prototype);
+        Object.setPrototypeOf(this, EnvironmentalistError.prototype);
         this.setUpStackTrace();
     }
 
@@ -17,7 +17,7 @@ export class HabitatError extends Error {
     }
 }
 
-export class EnvironmentNotExistingError extends HabitatError {
+export class EnvironmentNotExistingError extends EnvironmentalistError {
     constructor(message: string) {
         super(message);
         Object.setPrototypeOf(this, EnvironmentNotExistingError.prototype);
@@ -25,7 +25,7 @@ export class EnvironmentNotExistingError extends HabitatError {
     }
 }
 
-export class EnvironmentAlreadyTakenError extends HabitatError {
+export class EnvironmentAlreadyTakenError extends EnvironmentalistError {
     constructor(message: string) {
         super(message);
         Object.setPrototypeOf(this, EnvironmentAlreadyTakenError.prototype);
@@ -33,7 +33,7 @@ export class EnvironmentAlreadyTakenError extends HabitatError {
     }
 }
 
-export class EnvironmentFreeError extends HabitatError {
+export class EnvironmentFreeError extends EnvironmentalistError {
     constructor(message: string) {
         super(message);
         Object.setPrototypeOf(this, EnvironmentFreeError.prototype);
