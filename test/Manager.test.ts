@@ -19,10 +19,25 @@ describe('Manager', () => {
             manager = new Environmentalist.Manager(new Environmentalist.ApiResponse());
         });
 
-        it('takeEnvironment', () => {
-            const environmentToTake: string = environmentNames[0];
-            let response: Environmentalist.ApiResponse = manager.takeEnvironment(environmentToTake, user, false);
-            expect(response.message).to.eq(`Environment "${environmentToTake}" taken by "${user.username}".`)
+        describe('take environment', () => {
+            it('regular', () => {
+                const environmentToTake: string = environmentNames[0];
+                let response: Environmentalist.ApiResponse = manager.takeEnvironment(environmentToTake, user, false);
+                expect(response.message).to.eq(`Environment "${environmentToTake}" taken by "${user.username}".`)
+            });
+
+            it('already taken', () => {
+                const environmentToTake: string = environmentNames[0];
+                manager.takeEnvironment(environmentToTake, user, false);
+                let response: Environmentalist.ApiResponse = manager.takeEnvironment(environmentToTake, user, false);
+                expect(response.message).to.eq(`Can <@${user.id}> take environment test1 <@${user.id}>?`)
+            });
+
+            it('not existing', () => {
+                const environmentToTake: string = 'test_non';
+                let response: Environmentalist.ApiResponse = manager.takeEnvironment(environmentToTake, user, false);
+                expect(response.message).to.eq(`Environment "${environmentToTake}" doesn't exist. Available environments are: "${environmentNames.join(", ")}".`)
+            });
         });
     });
 
@@ -32,10 +47,25 @@ describe('Manager', () => {
             manager = new Environmentalist.Manager(new Environmentalist.SlackResponse());
         });
 
-        it('takeEnvironment', () => {
-            const environmentToTake: string = environmentNames[0];
-            let response: Environmentalist.ApiResponse = manager.takeEnvironment(environmentToTake, user, false);
-            expect(response.message).to.eq(`{"response_type":"","text":"Environment *test1* taken by *ibalosh*."}`)
+        describe('take environment', () => {
+            it('regular', () => {
+                const environmentToTake: string = environmentNames[0];
+                let response: Environmentalist.ApiResponse = manager.takeEnvironment(environmentToTake, user, false);
+                expect(response.message).to.eq(`{"response_type":"","text":"Environment *test1* taken by *ibalosh*."}`)
+            });
+
+            it('already taken', () => {
+                const environmentToTake: string = environmentNames[0];
+                manager.takeEnvironment(environmentToTake, user, false);
+                let response: Environmentalist.ApiResponse = manager.takeEnvironment(environmentToTake, user, false);
+                expect(response.message).to.eq(`{"response_type":"in_channel","text":"Can <@${user.id}> take environment test1 <@${user.id}>?"}`)
+            });
+
+            it('not existing', () => {
+                const environmentToTake: string = 'test_non';
+                let response: Environmentalist.ApiResponse = manager.takeEnvironment(environmentToTake, user, false);
+                expect(response.message).to.eq(`{"response_type":"","text":"Environment *${environmentToTake}* doesn't exist. Available environments are: *${environmentNames.join(", ")}*."}`)
+            });
         });
     });
 

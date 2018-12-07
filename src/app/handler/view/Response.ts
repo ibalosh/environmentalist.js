@@ -32,7 +32,7 @@ export class ApiResponse extends Response {
     }
 
     public generateAlreadyTakenMessage(environment: Environment, user: User): void {
-        this.message = `Can <@${user.id}> take environment ${environment.name} <@${environment.takenBy.id}>?.`;
+        this.message = `Can <@${user.id}> take environment ${environment.name} <@${environment.takenBy.id}>?`;
     }
 
     public generateFreeMessage(environmentName: string, user: User): void {
