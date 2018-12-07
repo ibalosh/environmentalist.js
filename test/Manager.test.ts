@@ -19,7 +19,7 @@ describe('Manager', () => {
             manager = new Environmentalist.Manager(new Environmentalist.ApiResponse());
         });
 
-        describe('take environment', () => {
+        describe('takeEnvironment', () => {
             it('regular', () => {
                 const environmentToTake: string = environmentNames[0];
                 let response: Environmentalist.ApiResponse = manager.takeEnvironment(environmentToTake, user, false);
@@ -33,10 +33,50 @@ describe('Manager', () => {
                 expect(response.message).to.eq(`Can <@${user.id}> take environment test1 <@${user.id}>?`)
             });
 
+            it('force', () => {
+                const environmentToTake: string = environmentNames[0];
+                manager.takeEnvironment(environmentToTake, user, false);
+                let response: Environmentalist.ApiResponse = manager.takeEnvironment(environmentToTake, user, true);
+                expect(response.message).to.eq(`Environment "${environmentToTake}" taken by "${user.username}".`)
+            });
+
             it('not existing', () => {
                 const environmentToTake: string = 'test_non';
                 let response: Environmentalist.ApiResponse = manager.takeEnvironment(environmentToTake, user, false);
                 expect(response.message).to.eq(`Environment "${environmentToTake}" doesn't exist. Available environments are: "${environmentNames.join(", ")}".`)
+            });
+        });
+
+        describe('freeEnvironment', () => {
+            it('regular', () => {
+                const environmentToTake: string = environmentNames[0];
+                manager.takeEnvironment(environmentToTake, user, false);
+                let response: Environmentalist.ApiResponse = manager.freeEnvironment(environmentToTake, user);
+                expect(response.message).to.eq(`Environment "${environmentToTake}" freed by "${user.username}".`)
+            });
+
+            it('not existing environment', () => {
+                const environmentToTake: string = 'not_existing';
+                let response: Environmentalist.ApiResponse = manager.freeEnvironment(environmentToTake, user);
+                expect(response.message).to.eq(`Environment "${environmentToTake}" doesn't exist. Available environments are: "${environmentNames.join(", ")}".`)
+            });
+
+            it('non owner', () => {
+                const environmentToTake: string = environmentNames[0];
+                const otherUser: Environmentalist.User = new Environmentalist.User('john', '200');
+                manager.takeEnvironment(environmentToTake, user, false);
+                let response: Environmentalist.ApiResponse = manager.freeEnvironment(environmentToTake, otherUser);
+                expect(response.message).to.eq(`Environment "${environmentToTake}" can only be freed by user "${user.username}".`)
+            });
+        });
+
+        describe('environmentStatus', () => {
+            it('regular', () => {
+                const environmentToTake: string = environmentNames[0];
+                manager.takeEnvironment(environmentToTake, user, false);
+                let response: Environmentalist.ApiResponse = manager.environmentStatus();
+                let message: Environmentalist.Environment[] = JSON.parse(response.message);
+                expect(message.length).to.eq(2);
             });
         });
     });
@@ -47,7 +87,7 @@ describe('Manager', () => {
             manager = new Environmentalist.Manager(new Environmentalist.SlackResponse());
         });
 
-        describe('take environment', () => {
+        describe('takeEnvironment', () => {
             it('regular', () => {
                 const environmentToTake: string = environmentNames[0];
                 let response: Environmentalist.ApiResponse = manager.takeEnvironment(environmentToTake, user, false);
@@ -61,10 +101,52 @@ describe('Manager', () => {
                 expect(response.message).to.eq(`{"response_type":"in_channel","text":"Can <@${user.id}> take environment test1 <@${user.id}>?"}`)
             });
 
+            it('force', () => {
+                const environmentToTake: string = environmentNames[0];
+                manager.takeEnvironment(environmentToTake, user, false);
+                let response: Environmentalist.ApiResponse = manager.takeEnvironment(environmentToTake, user, true);
+                expect(response.message).to.eq(`{"response_type":"","text":"Environment *test1* taken by *ibalosh*."}`)
+            });
+
             it('not existing', () => {
                 const environmentToTake: string = 'test_non';
                 let response: Environmentalist.ApiResponse = manager.takeEnvironment(environmentToTake, user, false);
                 expect(response.message).to.eq(`{"response_type":"","text":"Environment *${environmentToTake}* doesn't exist. Available environments are: *${environmentNames.join(", ")}*."}`)
+            });
+        });
+
+        describe('freeEnvironment', () => {
+            it('regular', () => {
+                const environmentToTake: string = environmentNames[0];
+                manager.takeEnvironment(environmentToTake, user, false);
+                let response: Environmentalist.ApiResponse = manager.freeEnvironment(environmentToTake, user);
+                expect(response.message).to.eq(`{"response_type":"","text":"Environment *${environmentToTake}* freed by *${user.username}*."}`)
+
+            });
+
+            it('not existing environment', () => {
+                const environmentToTake: string = 'not_existing';
+                let response: Environmentalist.ApiResponse = manager.freeEnvironment(environmentToTake, user);
+                expect(response.message).to.eq(`{"response_type":"","text":"Environment *${environmentToTake}* doesn't exist. Available environments are: *${environmentNames.join(", ")}*."}`)
+            });
+
+            it('non owner', () => {
+                const environmentToTake: string = environmentNames[0];
+                const otherUser: Environmentalist.User = new Environmentalist.User('john', '200');
+                manager.takeEnvironment(environmentToTake, user, false);
+                let response: Environmentalist.ApiResponse = manager.freeEnvironment(environmentToTake, otherUser);
+                expect(response.message).to.eq(`{"response_type":"","text":"Environment *${environmentToTake}* can only be freed by user *${user.username}*."}`)
+            });
+        });
+
+        describe('environmentStatus', () => {
+            it('regular', () => {
+                const environmentToTake: string = environmentNames[0];
+                manager.takeEnvironment(environmentToTake, user, false);
+                let response: Environmentalist.ApiResponse = manager.environmentStatus();
+                let message: any = JSON.parse(response.message);
+                expect(message.attachments.length).to.eq(2);
+                expect(message.text).to.eq('Environments status');
             });
         });
     });
@@ -77,6 +159,11 @@ describe('Manager', () => {
         it('regular', () => {
             Environmentalist.Manager.initEnvironments(environmentNames);
             expect(manager.getEnvironmentNames()).to.eql(environmentNames);
+        });
+
+        it('empty', () => {
+            Environmentalist.Manager.initEnvironments([]);
+            expect(manager.getEnvironmentNames()).to.eql([]);
         });
 
         it('overwrite', () => {

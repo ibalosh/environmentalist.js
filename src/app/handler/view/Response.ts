@@ -48,6 +48,6 @@ export class ApiResponse extends Response {
     }
 
     public generateEnvironmentStatusMessage(environments: Environment[]) {
-        this.message = environments;
+        this.message = JSON.stringify(environments);
     }
 }
