@@ -99,7 +99,7 @@ export class SlackResponse extends ApiResponse {
                 color = SlackColor.RED;
                 if (environment.takenAt === null) { environment.takenAt = new Date(); }
                 const timeString: string = moment(environment.takenAt).utcOffset('-0500').format('MMMM DD - HH:mm A');
-                text = `taken by: ${environment.takenBy.username} at ${timeString} EST`;
+                text = `taken by: ${environment.takenBy.username} at ` + `${timeString} EST`;
             }
 
             let attachment: SlackAttachment = that.createAttachment(color,environment.name,text);
