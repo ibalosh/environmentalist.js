@@ -1,4 +1,5 @@
 import {Manager} from "./handler";
+import {EnvironmentalistServer} from "../index";
 
 export class Configuration {
     public ENVIRONMENTS: string[];
@@ -19,15 +20,30 @@ export class Configuration {
 /**
  * Singleton wrapper that contains app configuration details.
  */
-export class Starter {
+export class App {
+    private static Defaults = {
+        slackUrl: "https://slack.com",
+        serverHost: "http://localhost",
+    };
+
     public static config: Configuration;
 
     public static init(config: Configuration) {
-        Manager.initEnvironments(config.ENVIRONMENTS)
+        config.SLACK_URL = this.Defaults.slackUrl;
+        config.SERVER_HOST = this.Defaults.serverHost;
         this.config = config;
+
+        Manager.initEnvironments(config.ENVIRONMENTS)
+        this.initServer();
     }
 
-    public static getEnvironments() {
-        Manager.environments;
+    private static initServer() {
+        const port: number  = App.config.SERVER_PORT;
+        const host: string  = App.config.SERVER_HOST;
+
+        EnvironmentalistServer.listen(port, () => {
+            console.log(`Welcome to Environmentalist`);
+            console.log(`Environmentalist listening at: ${host}:${port}/`);
+        });
     }
 }
