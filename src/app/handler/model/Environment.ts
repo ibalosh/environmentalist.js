@@ -1,6 +1,9 @@
 import {User} from "./User";
 import {EnvironmentFreeError, EnvironmentAlreadyTakenError} from "..";
 
+/**
+ * Environments model.
+ */
 export class Environment {
     public name: string;
     public taken: boolean;

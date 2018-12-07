@@ -35,7 +35,7 @@ describe('Manager', () => {
         it('takeEnvironment', () => {
             const environmentToTake: string = environmentNames[0];
             let response: Environmentalist.ApiResponse = manager.takeEnvironment(environmentToTake, user, false);
-            expect(response.message).to.eq(`{"response_type":"","text":"Environment *${environmentToTake}* taken by *${user.username}*."}`)
+            expect(response.message).to.eq(`{"response_type":"","text":"Environment *test1* taken by *ibalosh*."}`)
         });
     });
 

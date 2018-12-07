@@ -1,12 +1,12 @@
-import {EnvironmentalistServer} from "./index";
-import {Manager} from "./handler";
+import {EnvironmentalistServer, Environmentalist} from "./index";
 
 const config = require("./../config.json");
-Manager.initEnvironments(config.environmentNames);
+Environmentalist.Starter.init(config);
 
-const port  = config.server.port;
-const host  = config.server.host;
+const port  = Environmentalist.Starter.config.SERVER_PORT;
+const host  = Environmentalist.Starter.config.SERVER_HOST;
 
 EnvironmentalistServer.listen(port, () => {
-    console.log(`Habitat listening at ${host}:${port}/`);
+    console.log(`Welcome to Environmentalist`);
+    console.log(`Environmentalist listening at: ${host}:${port}/`);
 });

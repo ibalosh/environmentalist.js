@@ -1,5 +1,5 @@
 import {Router, Response, Request} from 'express';
-import * as Environmentalist from "../../handler";
+import * as Environmentalist from "../../index";
 import {Slack} from "../../index";
 
 const router: Router = Router();
@@ -30,7 +30,7 @@ router.post('/free', function (req: Request, res: Response) {
  * Take environment route.
  */
 router.post('/take', function (req: Request, res: Response) {
-    let slack: Slack = new Slack();
+    const slack: Slack = new Slack(Environmentalist.Starter.config.SLACK_URL, Environmentalist.Starter.config.SLACK_AUTH_HEADER);
     slack.findUserByEmail(req.body.user_email).then( (slackResponse: any) => {
         req.body.user_id = slackResponse.user.id;
         req.body.user_name = slackResponse.user.name;
@@ -40,6 +40,8 @@ router.post('/take', function (req: Request, res: Response) {
 
         res.setHeader('Content-Type', 'application/json');
         res.status(response.statusCode).send(response.message);
+    }).catch((error: Error) => {
+        console.log(error.message);
     });
 });
 

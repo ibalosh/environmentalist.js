@@ -1,5 +1,4 @@
-import * as Environmentalist from './handler';
-export * from './slack/Slack'
-export {EnvironmentalistServer} from "./app/server";
+import * as Environmentalist from './app';
 export {Environmentalist};
+export {EnvironmentalistServer} from "./app/server/server";
 

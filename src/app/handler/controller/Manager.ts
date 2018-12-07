@@ -23,7 +23,7 @@ export class Manager {
      * @param {string[]} environmentNames - names of environments
      */
     public static initEnvironments(environmentNames: string[]) {
-        Manager.environments = [];
+        this.environments = [];
         environmentNames.forEach((environmentName: string) => {
             Manager.environments.push(new Environment(environmentName)) });
     }

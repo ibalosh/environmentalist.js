@@ -1,20 +1,12 @@
 {
-  "environmentNames": [
+  "ENVIRONMENTS": [
     "production",
     "staging1",
     "staging2",
     "staging3"
   ],
-  "server": {
-    "port": 3002,
-    "host": "http://localhost"
-  },
-  "slack": {
-    "url": "https://slack.com",
-    "auth_header": "Bearer xoxp-test-test-test-test",
-    "endpoints": {
-      "usersList": "/api/users.list",
-      "userByEmail": "/api/users.lookupByEmail"
-    }
-  }
+  "SERVER_PORT": 3002,
+  "SERVER_HOST": "http://localhost",
+  "SLACK_URL": "https://slack.com",
+  "SLACK_AUTH_HEADER": "Bearer xoxp-test-test-test"
 }
