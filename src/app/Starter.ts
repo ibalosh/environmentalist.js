@@ -1,19 +1,27 @@
 import {Manager} from "./handler";
 import {EnvironmentalistServer} from "../index";
 
+/**
+ * Configuration data for running app server.
+ */
 export class Configuration {
-    public ENVIRONMENTS: string[];
-    public SERVER_PORT: number;
-    public SERVER_HOST: string;
-    public SLACK_URL: string;
-    public SLACK_AUTH_HEADER : string;
+    private static Defaults = {
+        slackUrl: "https://slack.com",
+        serverHost: "http://localhost",
+    };
 
-    public constructor(environments: string[], serverPort: number, serverHost: string, slackUrl: string, slackAuthHeader: string) {
-        this.ENVIRONMENTS = environments;
-        this.SERVER_PORT = serverPort;
-        this.SERVER_HOST = serverHost;
-        this.SLACK_URL = slackUrl;
-        this.SLACK_AUTH_HEADER = slackAuthHeader;
+    public environments: string[];
+    public serverPort: number;
+    public serverHost: string;
+    public slackUrl: string;
+    public slackAuthHeader : string;
+
+    public constructor(environments: string[], serverPort: number, slackAuthHeader: string) {
+        this.environments = environments;
+        this.serverPort = serverPort;
+        this.serverHost = Configuration.Defaults.serverHost;
+        this.slackUrl = Configuration.Defaults.slackUrl;
+        this.slackAuthHeader = slackAuthHeader;
     }
 }
 
@@ -21,25 +29,18 @@ export class Configuration {
  * Singleton wrapper that contains app configuration details.
  */
 export class App {
-    private static Defaults = {
-        slackUrl: "https://slack.com",
-        serverHost: "http://localhost",
-    };
-
     public static config: Configuration;
 
     public static init(config: Configuration) {
-        config.SLACK_URL = this.Defaults.slackUrl;
-        config.SERVER_HOST = this.Defaults.serverHost;
         this.config = config;
 
-        Manager.initEnvironments(config.ENVIRONMENTS)
+        Manager.initEnvironments(config.environments)
         this.initServer();
     }
 
     private static initServer() {
-        const port: number  = App.config.SERVER_PORT;
-        const host: string  = App.config.SERVER_HOST;
+        const port: number  = App.config.serverPort;
+        const host: string  = App.config.serverHost;
 
         EnvironmentalistServer.listen(port, () => {
             console.log(`Welcome to Environmentalist`);

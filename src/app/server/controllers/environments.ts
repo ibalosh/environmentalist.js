@@ -30,7 +30,7 @@ router.post('/free', function (req: Request, res: Response) {
  * Take environment route.
  */
 router.post('/take', function (req: Request, res: Response) {
-    const slack: Slack = new Slack(Environmentalist.App.config.SLACK_URL, Environmentalist.App.config.SLACK_AUTH_HEADER);
+    const slack: Slack = new Slack(Environmentalist.App.config.slackUrl, Environmentalist.App.config.slackAuthHeader);
     slack.findUserByEmail(req.body.user_email).then( (slackResponse: any) => {
         req.body.user_id = slackResponse.user.id;
         req.body.user_name = slackResponse.user.name;
