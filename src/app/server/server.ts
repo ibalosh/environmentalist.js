@@ -13,7 +13,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/', EnvironmentsAPI);
 app.use('/slack/', EnvironmentsSlackAPI);
 
-export const EnvironmentalistServer: express.Application = app;
+export const Server: express.Application = app;
 
 
 

@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import 'mocha';
-import {Environmentalist} from '../src'
+import * as Environmentalist from '../src'
 
 describe('Manager', () => {
     const environmentNames: string[] = ['test1', 'test2'];

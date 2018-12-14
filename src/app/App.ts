@@ -1,5 +1,5 @@
 import {Manager} from "./handler";
-import {EnvironmentalistServer} from "../index";
+import {Server} from "./index";
 
 /**
  * Configuration data for running app server.
@@ -42,7 +42,7 @@ export class App {
         const port: number  = App.config.serverPort;
         const host: string  = App.config.serverHost;
 
-        EnvironmentalistServer.listen(port, () => {
+        Server.listen(port, () => {
             console.log(`Welcome to Environmentalist`);
             console.log(`Environmentalist listening at: ${host}:${port}/`);
         });
