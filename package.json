@@ -4,6 +4,7 @@
   "description": "A simple Node.js app to be used with Slack for managing environment occupancy.",
   "license": "MITNFA",
   "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "directories": {
     "lib": "./dist/index.js"
   },

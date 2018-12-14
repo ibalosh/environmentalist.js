@@ -1,2 +1,8 @@
-tsconfig.json
+*.swp
+**/*.DS_Store
+**/*.idea
+**/*.iml
+
 src
+dist/test*
+tsconfig.json
