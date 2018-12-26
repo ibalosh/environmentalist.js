@@ -1,5 +1,5 @@
 # Environmentalist
-[![Build Status](https://travis-ci.org/ibalosh/environmentalist.svg?branch=master)](https://travis-ci.org/ibalosh/environmentalist)
+[![Build Status](https://travis-ci.org/ibalosh/environmentalist.js.svg?branch=master)](https://travis-ci.org/ibalosh/environmentalist.js)
 [![License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](http://www.opensource.org/licenses/MIT)
 [![npm version](https://badge.fury.io/js/environmentalist.js.svg)](https://badge.fury.io/js/environmentalist.js)
 
