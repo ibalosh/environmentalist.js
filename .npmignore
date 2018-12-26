@@ -3,6 +3,7 @@
 **/*.idea
 **/*.iml
 
+assets
 src
 dist/test*
 tsconfig.json
