@@ -11,12 +11,13 @@
   "devDependencies": {
     "@types/chai": "^4.1.4",
     "@types/mocha": "^5.2.5",
+    "@types/node": "^10.12.3",
     "chai": "^4.1.2",
     "mocha": "^5.2.0",
-    "@types/node": "^10.12.3",
+    "nconf": "^0.10.0",
     "ts-node": "^7.0.1",
-    "typescript": "^2.7.2",
-    "nconf": "^0.10.0"
+    "tslint": "^5.12.0",
+    "typescript": "^2.7.2"
   },
   "dependencies": {
     "body-parser": "^1.18.2",
@@ -27,7 +28,8 @@
   },
   "scripts": {
     "compile": "rm -r -f ./dist && node_modules/.bin/tsc",
-    "test": "node_modules/mocha/bin/mocha --timeout 10000 --retries 1 -r ts-node/register test/**/*test.ts"
+    "test": "node_modules/mocha/bin/mocha --timeout 10000 --retries 1 -r ts-node/register test/**/*test.ts",
+    "codecheck": "tslint src/**/*.ts"
   },
   "author": "Igor Balos",
   "repository": {
