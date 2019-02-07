@@ -63,7 +63,7 @@ export class SlackResponse extends ApiResponse {
     }
 
     public generateAlreadyTakenMessage(environment: Environment, user: User): void {
-        super.generateAlreadyTakenMessage(environment, user);
+        this.message = `Can <@${user.id}> take environment ${environment.name} <@${environment.takenBy.id}>?`;
         this.formatApiMessageForSlack(SlackResponseType.VISIBLE_TO_PUBLIC);
     }
 

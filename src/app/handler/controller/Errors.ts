@@ -40,3 +40,11 @@ export class EnvironmentFreeError extends EnvironmentalistError {
         this.setUpStackTrace();
     }
 }
+
+export class EnvironmentRequestError extends EnvironmentalistError {
+    constructor(message: string) {
+        super(message);
+        Object.setPrototypeOf(this, EnvironmentRequestError.prototype);
+        this.setUpStackTrace();
+    }
+}

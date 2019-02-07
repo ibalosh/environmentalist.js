@@ -30,7 +30,7 @@ describe('Manager', () => {
                 const environmentToTake: string = environmentNames[0];
                 manager.takeEnvironment(environmentToTake, user, false);
                 let response: Environmentalist.ApiResponse = manager.takeEnvironment(environmentToTake, user, false);
-                expect(response.message).to.eq(`Can <@${user.id}> take environment test1 <@${user.id}>?`)
+                expect(response.message).to.eq(`Environment "${environmentToTake}" already taken by "${user.username}".`)
             });
 
             it('force', () => {

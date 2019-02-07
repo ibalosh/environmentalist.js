@@ -1,9 +1,11 @@
 import {Environment, User, Response} from "../index";
 import * as Errors from "./Errors";
 
-interface IParsedTakeEnvironmentMessage {
+interface IParsedMessage {
     environmentName: string;
     forceTakingEnvironment: boolean;
+    branchBackend: string,
+    branchFrontend: string
 }
 
 /**
@@ -22,7 +24,7 @@ export class Manager {
      * Initialize environments based on their name.
      * @param {string[]} environmentNames - names of environments
      */
-    public static initEnvironments(environmentNames: string[]) {
+    public static initEnvironments(environmentNames: string[]): void {
         this.environments = [];
         environmentNames.forEach((environmentName: string) => {
             Manager.environments.push(new Environment(environmentName)) });
@@ -90,7 +92,7 @@ export class Manager {
      * @returns {Response} - response based on users request
      */
     public takeEnvironmentByMessage(message: string, user: User): Response {
-        const parsedMessage = this.parseTakeEnvironmentMessage(message);
+        const parsedMessage = this.parseMessage(message);
         const environmentName: string = parsedMessage.environmentName;
         const forceTakingEnvironment: boolean = parsedMessage.forceTakingEnvironment;
 
@@ -101,13 +103,15 @@ export class Manager {
      * Split string message.
      *
      * @param {string} messageToBeParsed - message to split into meaningfull actions
-     * @returns {IParsedTakeEnvironmentMessage} - actions to be taken to environment
+     * @returns {IParsedMessage} - actions to be taken to environment
      */
-    private parseTakeEnvironmentMessage(messageToBeParsed: string): IParsedTakeEnvironmentMessage {
+    private parseMessage(messageToBeParsed: string): IParsedMessage {
         const messageParts: string[] = messageToBeParsed.trim().split(" ").filter(String);
         return {
             environmentName: messageParts[0],
-            forceTakingEnvironment: messageParts.length > 1
+            forceTakingEnvironment: messageParts.length > 1,
+            branchFrontend: messageParts[0],
+            branchBackend: messageParts[0]
         }
     }
 
