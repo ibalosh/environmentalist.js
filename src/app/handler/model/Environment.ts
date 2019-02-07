@@ -24,7 +24,9 @@ export class Environment {
             this.takenBy = user;
         }
         else {
-            throw new EnvironmentAlreadyTakenError(`Environment "${this.name}" is already taken.`)
+            if (this.takenBy.id !== user.id) {
+                throw new EnvironmentAlreadyTakenError(`Environment "${this.name}" is already taken.`)
+            }
         }
     }
 
