@@ -26,11 +26,23 @@ describe('Manager', () => {
                 expect(response.message).to.eq(`Environment "${environmentToTake}" taken by "${user.username}".`)
             });
 
-            it('already taken', () => {
-                const environmentToTake: string = environmentNames[0];
-                manager.takeEnvironment(environmentToTake, user, false);
-                let response: Environmentalist.ApiResponse = manager.takeEnvironment(environmentToTake, user, false);
-                expect(response.message).to.eq(`Environment "${environmentToTake}" already taken by "${user.username}".`)
+            describe('already taken', () => {
+                it('call by same user', () => {
+                    const environmentToTake: string = environmentNames[0];
+                    manager.takeEnvironment(environmentToTake, user, false);
+
+                    let response: Environmentalist.ApiResponse = manager.takeEnvironment(environmentToTake, user, false);
+                    expect(response.message).to.eq(`Environment "${environmentToTake}" taken by "${user.username}".`)
+                });
+
+                it('call by different user', () => {
+                    const environmentToTake: string = environmentNames[0];
+                    manager.takeEnvironment(environmentToTake, user, false);
+
+                    const userOther = new Environmentalist.User('john', '200');
+                    let response: Environmentalist.ApiResponse = manager.takeEnvironment(environmentToTake, userOther, false);
+                    expect(response.message).to.eq(`Environment "${environmentToTake}" already taken by "${user.username}".`)
+                });
             });
 
             it('force', () => {
@@ -94,11 +106,24 @@ describe('Manager', () => {
                 expect(response.message).to.eq(`{"response_type":"","text":"Environment *test1* taken by *ibalosh*."}`)
             });
 
-            it('already taken', () => {
-                const environmentToTake: string = environmentNames[0];
-                manager.takeEnvironment(environmentToTake, user, false);
-                let response: Environmentalist.ApiResponse = manager.takeEnvironment(environmentToTake, user, false);
-                expect(response.message).to.eq(`{"response_type":"in_channel","text":"Can <@${user.id}> take environment test1 <@${user.id}>?"}`)
+            describe('already taken', () => {
+                it('call by same user', () => {
+                    const environmentToTake: string = environmentNames[0];
+                    manager.takeEnvironment(environmentToTake, user, false);
+
+                    let response: Environmentalist.ApiResponse = manager.takeEnvironment(environmentToTake, user, false);
+                    expect(response.message).to.eq(`{"response_type":"","text":"Environment *${environmentToTake}* taken by *${user.username}*."}`)
+                });
+
+                it('call by different user', () => {
+                    const environmentToTake: string = environmentNames[0];
+                    manager.takeEnvironment(environmentToTake, user, false);
+
+                    const userOther = new Environmentalist.User('john', '200');
+                    let response: Environmentalist.ApiResponse = manager.takeEnvironment(environmentToTake, userOther, false);
+                    expect(response.message).to.eq(`{"response_type":"in_channel","text":"Can <@${userOther.id}> take environment ${environmentToTake} <@${user.id}>?"}`)
+                });
+
             });
 
             it('force', () => {
