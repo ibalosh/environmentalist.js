@@ -87,7 +87,7 @@ export class Manager {
     /**
      * Free environment, if possible.
      *
-     * @param {string} message - message that contains environment name amongs other information
+     * @param {string} message - message that contains environment name amongst other information
      * @param {User} user - user requesting environment action
      * @returns {Response} - response based on users request
      */
