@@ -10,11 +10,11 @@ export class Environment {
     public takenAt: Date | null;
     public takenBy: User;
 
-    constructor(name: string) {
+    constructor(name: string, taken: boolean = false, takenAt: Date|null = null, user: User = new User()) {
         this.name = name;
-        this.taken = false;
-        this.takenAt = null;
-        this.takenBy = new User();
+        this.taken = taken;
+        this.takenAt = takenAt;
+        this.takenBy = user;
     }
 
     public take(user: User, takeByForce: boolean): void {

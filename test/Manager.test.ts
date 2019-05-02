@@ -8,6 +8,7 @@ describe('Manager', () => {
     let user: Environmentalist.User;
 
     beforeEach(() => {
+        Environmentalist.Manager.clearEnvironmentsStateFile();
         Environmentalist.Manager.initEnvironments(environmentNames);
         manager = new Environmentalist.Manager(new Environmentalist.ApiResponse());
         user = new Environmentalist.User('ibalosh', '100');

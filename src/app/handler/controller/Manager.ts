@@ -1,5 +1,7 @@
 import {Environment, User, Response} from "../index";
 import * as Errors from "./Errors";
+import DataSaver from "./DataSaver"
+import moment = require("moment");
 
 interface IParsedMessage {
     environmentName: string;
@@ -15,6 +17,7 @@ interface IParsedMessage {
 export class Manager {
     public static environments: Environment[] = [];
     protected response: Response;
+    private static dataSaver: DataSaver = new DataSaver()
 
     constructor(response: Response) {
         this.response = response;
@@ -25,9 +28,32 @@ export class Manager {
      * @param {string[]} environmentNames - names of environments
      */
     public static initEnvironments(environmentNames: string[]): void {
-        this.environments = [];
-        environmentNames.forEach((environmentName: string) => {
-            Manager.environments.push(new Environment(environmentName)) });
+        if (Manager.setEnvironmentsStateFromFile() === false) {
+            Manager.environments = [];
+            environmentNames.forEach((environmentName: string) => {
+                Manager.environments.push(new Environment(environmentName))
+            });
+        }
+    }
+
+    public static clearEnvironmentsStateFile(): void {
+        Manager.dataSaver.clearState();
+    }
+
+    /**
+     * Initialize environments with all their states set, from file.
+     * @returns {boolean} - true if operation was executed
+     */
+    private static setEnvironmentsStateFromFile(): boolean {
+        const environments = Manager.dataSaver.retrieveState();
+
+        if (environments !== null) {
+            Manager.environments = environments;
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
     /**
@@ -59,6 +85,7 @@ export class Manager {
         try {
             this.retrieveEnvironment(environmentName).free(user);
             this.response.generateFreeMessage(environmentName, user);
+            Manager.dataSaver.preserveState(Manager.environments);
         } catch (error) {
             this.handleErrors(error, environmentName, user);
         }
@@ -77,6 +104,7 @@ export class Manager {
         try {
             this.retrieveEnvironment(environmentName).take(user, takeByForce);
             this.response.generateTakeMessage(environmentName, user);
+            Manager.dataSaver.preserveState(Manager.environments);
         } catch (error) {
             this.handleErrors(error, environmentName, user)
         }
@@ -153,7 +181,7 @@ export class Manager {
         return this.handleEnvironmentRetrieval(environmentFound, environmentName);
     }
 
-    private handleEnvironmentRetrieval(environmentFound: Environment | undefined, environmentName: string) {
+    private handleEnvironmentRetrieval(environmentFound: Environment | undefined, environmentName: string):Environment {
         if (Manager.environments.length < 1) {
             throw new Errors.EnvironmentalistError('Environments are not initialized.');
         }

@@ -98,7 +98,7 @@ export class SlackResponse extends ApiResponse {
             else {
                 color = SlackColor.RED;
                 if (environment.takenAt === null) { environment.takenAt = new Date(); }
-                const timeString: string = moment(environment.takenAt).utcOffset('-0500').format('MMMM DD - HH:mm A');
+                const timeString: string = moment(environment.takenAt).utcOffset('-0400').format('MMMM DD - HH:mm A');
                 text = `taken by: ${environment.takenBy.username} at ` + `${timeString} EST`;
             }
 

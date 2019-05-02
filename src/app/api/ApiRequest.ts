@@ -1,8 +1,8 @@
 import Axios, {AxiosPromise} from "axios";
 
 export enum APIRequestType {
-    GET = 'get',
-    POST = 'post'
+    GET = "get",
+    POST = "post"
 }
 
 /**

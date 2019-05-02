@@ -3,8 +3,8 @@
  */
 export class Configuration {
     private static Defaults = {
-      slackUrl: "https://slack.com",
-      serverHost: "http://localhost",
+        slackUrl: "https://slack.com",
+        serverHost: "http://localhost",
     };
 
     public environments: string[];
@@ -14,10 +14,10 @@ export class Configuration {
     public slackAuthHeader: string;
 
     public constructor(environments: string[], serverPort: number, slackAuthHeader: string) {
-      this.environments = environments;
-      this.serverPort = serverPort;
-      this.serverHost = Configuration.Defaults.serverHost;
-      this.slackUrl = Configuration.Defaults.slackUrl;
-      this.slackAuthHeader = slackAuthHeader;
+        this.environments = environments;
+        this.serverPort = serverPort;
+        this.serverHost = Configuration.Defaults.serverHost;
+        this.slackUrl = Configuration.Defaults.slackUrl;
+        this.slackAuthHeader = slackAuthHeader;
     }
 }
