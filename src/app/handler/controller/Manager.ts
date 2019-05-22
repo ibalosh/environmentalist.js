@@ -36,18 +36,23 @@ export class Manager {
             });
         }
 
+        const maxReservationInSeconds: number = 60 * 60 * 8; // 8 hours
+        const checkReservationPeriodSeconds: number = 1000 * 60 * 30; // 30 minutes
+
+        /**
+         * check if environment taken for more than
+         */
         setInterval(() => {
             Manager.environments.forEach( (environment: Environment) => {
                 if (environment.takenAt !== null) {
                     const currentTime: number  = Math.floor(new Date().valueOf()/1000)
-                    const envTime: any = Math.floor(environment.takenAt.valueOf()/1000);
-                    if (currentTime - envTime > 60) {
-                        console.log("here");
-                        environment.free(new User(), true);
-                    }
+                    const envTime: any = Math.floor(new Date(environment.takenAt).valueOf()/1000);
+                    if (currentTime - envTime > maxReservationInSeconds) { environment.free(new User(), true); }
                 }
             });
-        }, 1000);
+
+            Manager.dataSaver.preserveState(Manager.environments);
+        }, checkReservationPeriodSeconds);
     }
 
     public static clearEnvironmentsStateFile(): void {
