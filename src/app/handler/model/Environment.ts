@@ -30,15 +30,19 @@ export class Environment {
         }
     }
 
-    public free(user: User): void {
-        if (this.taken === false || this.takenBy.username === user.username) {
-            this.taken = false;
-            this.takenAt = null;
-            this.takenBy = new User();
+    public free(user: User, freeByFoce: boolean = false): void {
+        if (this.taken === false || this.takenBy.username === user.username || freeByFoce === true) {
+            this.clear();
         }
         else {
             throw new EnvironmentFreeError(`Environment "${this.name}" can only be freed by ${this.takenBy.username}.`)
         }
+    }
+
+    private clear() {
+        this.taken = false;
+        this.takenAt = null;
+        this.takenBy = new User();
     }
 }
 

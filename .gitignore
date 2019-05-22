@@ -16,5 +16,5 @@ temp
 **/*.iml
 src/test.ts
 config.json
-
+data
 

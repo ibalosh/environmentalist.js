@@ -2,6 +2,7 @@ import {Environment, User, Response} from "../index";
 import * as Errors from "./Errors";
 import DataSaver from "./DataSaver"
 import moment = require("moment");
+import {setInterval} from "timers";
 
 interface IParsedMessage {
     environmentName: string;
@@ -34,6 +35,19 @@ export class Manager {
                 Manager.environments.push(new Environment(environmentName))
             });
         }
+
+        setInterval(() => {
+            Manager.environments.forEach( (environment: Environment) => {
+                if (environment.takenAt !== null) {
+                    const currentTime: number  = Math.floor(new Date().valueOf()/1000)
+                    const envTime: any = Math.floor(environment.takenAt.valueOf()/1000);
+                    if (currentTime - envTime > 60) {
+                        console.log("here");
+                        environment.free(new User(), true);
+                    }
+                }
+            });
+        }, 1000);
     }
 
     public static clearEnvironmentsStateFile(): void {

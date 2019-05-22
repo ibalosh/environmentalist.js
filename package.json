@@ -33,9 +33,12 @@
     "npm": "^6.9.0"
   },
   "scripts": {
-    "compile": "rm -r -f ./dist && node_modules/.bin/tsc",
+    "compile": "npm run clean && npm run ts && npm run permissions",
+    "permissions": "chmod +x ./dist/index.js",
+    "clean": "rm -r -f ./dist",
+    "ts": "node_modules/.bin/tsc",
     "test": "node_modules/mocha/bin/mocha --timeout 10000 --retries 1 -r ts-node/register test/**/*test.ts",
-    "codecheck": "./node_modules/.bin/eslint src/**/*.ts"
+    "lint": "./node_modules/.bin/eslint src/**/*.ts"
   },
   "author": "Igor Balos",
   "repository": {
