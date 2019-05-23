@@ -27,8 +27,9 @@ export class Manager {
     /**
      * Initialize environments based on their name.
      * @param {string[]} environmentNames - names of environments
+     * @param {boolean} clearEnvironmentStatesByTime - if environment is take for too long, free it
      */
-    public static initEnvironments(environmentNames: string[]): void {
+    public static initEnvironments(environmentNames: string[], clearEnvironmentStatesByTime: boolean = true): void {
         if (Manager.setEnvironmentsStateFromFile() === false) {
             Manager.environments = [];
             environmentNames.forEach((environmentName: string) => {
@@ -36,6 +37,15 @@ export class Manager {
             });
         }
 
+        if (clearEnvironmentStatesByTime === true) {
+            this.clearEnvironmentsPeriodically();
+        }
+    }
+
+    /**
+     * In case that environment is occupied for more than X hours, free environment.
+     */
+    private static clearEnvironmentsPeriodically() {
         const maxReservationInSeconds: number = 60 * 60 * 8; // 8 hours
         const checkReservationPeriodSeconds: number = 1000 * 60 * 30; // 30 minutes
 

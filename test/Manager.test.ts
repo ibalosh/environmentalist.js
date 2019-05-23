@@ -9,14 +9,14 @@ describe('Manager', () => {
 
     beforeEach(() => {
         Environmentalist.Manager.clearEnvironmentsStateFile();
-        Environmentalist.Manager.initEnvironments(environmentNames);
+        Environmentalist.Manager.initEnvironments(environmentNames, false);
         manager = new Environmentalist.Manager(new Environmentalist.ApiResponse());
         user = new Environmentalist.User('ibalosh', '100');
     });
 
     describe('API response', () => {
         beforeEach(() => {
-            Environmentalist.Manager.initEnvironments(environmentNames);
+            Environmentalist.Manager.initEnvironments(environmentNames, false);
             manager = new Environmentalist.Manager(new Environmentalist.ApiResponse());
         });
 
@@ -96,7 +96,7 @@ describe('Manager', () => {
 
     describe('Slack response', () => {
         beforeEach(() => {
-            Environmentalist.Manager.initEnvironments(environmentNames);
+            Environmentalist.Manager.initEnvironments(environmentNames, false);
             manager = new Environmentalist.Manager(new Environmentalist.SlackResponse());
         });
 
@@ -183,18 +183,18 @@ describe('Manager', () => {
 
     describe('initEnvironment', () => {
         it('regular', () => {
-            Environmentalist.Manager.initEnvironments(environmentNames);
+            Environmentalist.Manager.initEnvironments(environmentNames, false);
             expect(manager.getEnvironmentNames()).to.eql(environmentNames);
         });
 
         it('empty', () => {
-            Environmentalist.Manager.initEnvironments([]);
+            Environmentalist.Manager.initEnvironments([], false);
             expect(manager.getEnvironmentNames()).to.eql([]);
         });
 
         it('overwrite', () => {
             const newEnvironmentNames: string[] = ['test1new', 'test2new'];
-            Environmentalist.Manager.initEnvironments(newEnvironmentNames);
+            Environmentalist.Manager.initEnvironments(newEnvironmentNames, false);
             expect(manager.getEnvironmentNames()).to.eql(newEnvironmentNames);
         });
     });
