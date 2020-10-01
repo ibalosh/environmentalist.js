@@ -1,0 +1,8 @@
+data
+**/*.log
+**/*.rvm
+**/*.DS_Store
+**/*.idea
+**/*test.ts
+.git
+Dockerfile
