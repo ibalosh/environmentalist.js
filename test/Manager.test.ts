@@ -7,7 +7,9 @@ describe('Manager', () => {
     let manager: Environmentalist.Manager;
     let user: Environmentalist.User;
 
+
     beforeEach(() => {
+        Environmentalist.Manager.initDataSaver('./data');
         Environmentalist.Manager.clearEnvironmentsStateFile();
         Environmentalist.Manager.initEnvironments(environmentNames, false);
         manager = new Environmentalist.Manager(new Environmentalist.ApiResponse());
