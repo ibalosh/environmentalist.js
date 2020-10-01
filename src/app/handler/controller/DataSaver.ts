@@ -9,8 +9,8 @@ class DataSaver {
     private localStorage: LocalStorage;
     private fileName: string = 'environments.json';
 
-    constructor() {
-        this.localStorage = new LocalStorage('./data');
+    constructor(path: string) {
+        this.localStorage = new LocalStorage(path);
     }
 
     /**

@@ -12,12 +12,14 @@ export class Configuration {
     public serverHost: string;
     public slackUrl: string;
     public slackAuthHeader: string;
+    public configDataPath: string;
 
-    public constructor(environments: string[], serverPort: number, slackAuthHeader: string) {
+    public constructor(environments: string[], serverPort: number, slackAuthHeader: string, configDataPath: string) {
         this.environments = environments;
         this.serverPort = serverPort;
         this.serverHost = Configuration.Defaults.serverHost;
         this.slackUrl = Configuration.Defaults.slackUrl;
         this.slackAuthHeader = slackAuthHeader;
+        this.configDataPath = configDataPath;
     }
 }

@@ -18,10 +18,14 @@ interface IParsedMessage {
 export class Manager {
     public static environments: Environment[] = [];
     protected response: Response;
-    private static dataSaver: DataSaver = new DataSaver()
+    private static dataSaver: DataSaver;
 
     constructor(response: Response) {
         this.response = response;
+    }
+
+    public static initDataSaver(path: string) {
+      this.dataSaver = new DataSaver(path);
     }
 
     /**

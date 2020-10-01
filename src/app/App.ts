@@ -11,6 +11,7 @@ export class App {
     public static init(config: Configuration): void {
         this.config = config;
 
+        Manager.initDataSaver(config.configDataPath)
         Manager.initEnvironments(config.environments);
         this.initServer();
     }
