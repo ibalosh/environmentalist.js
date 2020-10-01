@@ -11,5 +11,8 @@ COPY . /app/
 RUN npm install
 RUN npm run compile
 
+# add curl for health checks
+RUN apk --no-cache add curl
+
 ENTRYPOINT ["node", "dist/run.js"]
 EXPOSE $APP_PORT
