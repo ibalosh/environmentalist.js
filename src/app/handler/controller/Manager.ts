@@ -4,11 +4,14 @@ import DataSaver from "./DataSaver"
 import moment = require("moment");
 import {setInterval} from "timers";
 
-interface IParsedMessage {
+interface EnvironmentToTakeParsed {
     environmentName: string;
     forceTakingEnvironment: boolean;
-    branchBackend: string,
-    branchFrontend: string
+}
+
+interface EnvironmentHealthParsed {
+    environmentName: string;
+    note: string | null;
 }
 
 /**
@@ -153,7 +156,7 @@ export class Manager {
      * @returns {Response} - response based on users request
      */
     public takeEnvironmentByMessage(message: string, user: User): Response {
-        const parsedMessage = this.parseMessage(message);
+        const parsedMessage = this.parseTakeEnvironmentMessage(message);
         const environmentName: string = parsedMessage.environmentName;
         const forceTakingEnvironment: boolean = parsedMessage.forceTakingEnvironment;
 
@@ -161,18 +164,49 @@ export class Manager {
     }
 
     /**
+     * Set environment health.
+     *
+     * @param {boolean} healthy - environment health
+     * @param {EnvironmentHealth} note - details about environment health
+     * @returns {Response} - environment status response
+     */
+    public setEnvironmentHealth(message: string, healthy: boolean): Response {
+        const parsedMessage = this.parseEnvironmentHealthMessage(message)
+        const environmentName: string = parsedMessage.environmentName;
+        const note: string | null = (healthy === true)? null : parsedMessage.note;
+
+        try {
+            this.retrieveEnvironment(environmentName).setHealth(healthy, note);
+            this.response.generateEnvironmentStatusMessage(Manager.environments);
+        } catch (error) {
+            this.response.generateNotExistingEnvironmentMessage(environmentName, this.getEnvironmentNames());
+        }
+
+        return this.response;
+    }
+
+    /**
      * Split string message.
      *
      * @param {string} messageToBeParsed - message to split into meaningfull actions
-     * @returns {IParsedMessage} - actions to be taken to environment
+     * @returns {EnvironmentToTakeParsed} - actions to be taken to environment
      */
-    private parseMessage(messageToBeParsed: string): IParsedMessage {
-        const messageParts: string[] = messageToBeParsed.trim().split(" ").filter(String);
+    private parseTakeEnvironmentMessage(messageToBeParsed: string): EnvironmentToTakeParsed {
+        const messageParts: string[] = messageToBeParsed.toString().trim().split(" ").filter(String);
         return {
             environmentName: messageParts[0],
-            forceTakingEnvironment: messageParts.length > 1,
-            branchFrontend: messageParts[0],
-            branchBackend: messageParts[0]
+            forceTakingEnvironment: messageParts.length > 1
+        }
+    }
+
+    private parseEnvironmentHealthMessage(messageToBeParsed: string): EnvironmentHealthParsed {
+        const messageParts: string[] = messageToBeParsed.toString().trim().split(" ").filter(String);
+        const environmentName: any = messageParts.shift();
+        const note: string|null = messageParts.length > 0 ? messageParts.join(' ') : null
+
+        return {
+            environmentName: environmentName,
+            note: note
         }
     }
 

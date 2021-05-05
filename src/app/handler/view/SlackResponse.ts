@@ -4,25 +4,28 @@ import moment = require("moment");
 
 enum SlackColor {
     GREEN = "#36a64f",
-    RED = "#FF0000"
+    RED = "#FF0000",
+    ORANGE = "#FF8C00"
 }
 
 class SlackAttachment {
-    color: string;
-    fields: SlackAttachmentField[];
+    public color: string;
+    public mrkdwn_in: string[];
+    public fields: SlackAttachmentField[];
 
-    constructor(color: string, fields: SlackAttachmentField[]) {
+    constructor(color: string, fields: SlackAttachmentField[] = []) {
         this.color = color;
         this.fields = fields;
+        this.mrkdwn_in = ["text"];
     }
 }
 
 class SlackAttachmentField {
-    title: string;
-    value: string;
+    title: string | null;
+    value: string | null;
     short: boolean;
 
-    constructor(title: string, value: string, short: boolean = true) {
+    constructor(title: string | null, value: string | null, short: boolean = false) {
         this.title = title;
         this.value = value;
         this.short = short;
@@ -84,25 +87,30 @@ export class SlackResponse extends ApiResponse {
 
     public generateEnvironmentStatusMessage(environments: Environment[]) {
         let that = this;
+
         let attachments: SlackAttachment[] = [];
         let data: SlackMessage = new SlackMessage("Environments status");
 
         environments.forEach(function(environment: Environment){
-            let color: SlackColor;
-            let text: string;
+            let attachment: SlackAttachment = new SlackAttachment(that.getAttachmentColor(environment))
+            let fields: SlackAttachmentField[] = [];
 
             if (environment.taken === false) {
-                color = SlackColor.GREEN;
-                text = "free";
+                fields.push(that.createAttachmentField(environment.name, "free"));
             }
             else {
-                color = SlackColor.RED;
                 if (environment.takenAt === null) { environment.takenAt = new Date(); }
                 const timeString: string = moment(environment.takenAt).utcOffset('-0400').format('MMMM DD - HH:mm A');
-                text = `taken by: ${environment.takenBy.username} at ` + `${timeString} EST`;
+                fields.push(that.createAttachmentField(environment.name,
+                    `taken by: ${environment.takenBy.username}`));
+                fields.push(that.createAttachmentField(null, `taken at: ${timeString} EST`));
             }
 
-            let attachment: SlackAttachment = that.createAttachment(color,environment.name,text);
+            if (environment.health.healthy === false && environment.health.note !== null) {
+                fields.push(that.createAttachmentField(null, `⚠️  ${environment.health.note}`));
+            }
+
+            attachment.fields = fields;
             attachments.push(attachment);
         });
 
@@ -110,14 +118,23 @@ export class SlackResponse extends ApiResponse {
         this.message = JSON.stringify(data);
     }
 
-    private createAttachment(color: SlackColor, title: string, value: string): SlackAttachment {
-        let attachmentFields: SlackAttachmentField[] = [];
-        attachmentFields.push(this.createAttachmentField(title, value));
+    private getAttachmentColor(environment: Environment): SlackColor {
+        let color: SlackColor;
 
-        return new SlackAttachment(color, attachmentFields);
+        if (environment.health.healthy === false) {
+            color = SlackColor.ORANGE
+        }
+        else if (environment.taken === true) {
+            color = SlackColor.RED;
+        }
+        else {
+            color = SlackColor.GREEN;
+        }
+
+        return color;
     }
 
-    private createAttachmentField(title: string, value: string): SlackAttachmentField {
+    private createAttachmentField(title: string | null, value: string): SlackAttachmentField {
         return new SlackAttachmentField(title, value);
     }
 

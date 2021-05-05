@@ -4,7 +4,7 @@
 export class Configuration {
     private static Defaults = {
         slackUrl: "https://slack.com",
-        serverHost: "http://localhost",
+        serverHost: "0.0.0.0",
     };
 
     public environments: string[];

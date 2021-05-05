@@ -4,7 +4,7 @@ import {Slack} from "../../index";
 import RequestManager from './RequestManager';
 
 const router: Router = Router();
-const responseManager: Environmentalist.Manager = new Environmentalist.Manager(new Environmentalist.ApiResponse());
+const environmentManager: Environmentalist.Manager = new Environmentalist.Manager(new Environmentalist.ApiResponse());
 
 router.use(function (req, res, next) {
     res.setHeader('Content-Type', 'application/json');
@@ -13,10 +13,26 @@ router.use(function (req, res, next) {
 });
 
 /**
+ * Environments health route.
+ */
+router.post('/healthy', async function (req: Request, res: Response) {
+    let response: Environmentalist.Response = environmentManager.setEnvironmentHealth(req.body.text,true);
+    res.status(response.statusCode).send(response.message);
+});
+
+/**
+ * Environments health route.
+ */
+router.post('/unhealthy', async function (req: Request, res: Response) {
+    let response: Environmentalist.Response = environmentManager.setEnvironmentHealth(req.body.text, false);
+    res.status(response.statusCode).send(response.message);
+});
+
+/**
  * Environments status route.
  */
 router.post('/status', function (req: Request, res: Response) {
-    let response: Environmentalist.Response = responseManager.environmentStatus();
+    let response: Environmentalist.Response = environmentManager.environmentStatus();
     res.status(response.statusCode).send(response.message);
 });
 
@@ -30,7 +46,7 @@ router.post('/free', async function (req: Request, res: Response) {
     try { await requestManager.validateRequest(req); }
     catch (error) { res.status(500).send(error.message); }
 
-    let response: Environmentalist.Response = responseManager.freeEnvironment(
+    let response: Environmentalist.Response = environmentManager.freeEnvironment(
         req.body.text, new Environmentalist.User(req.body.user_name, req.body.user_id));
 
     res.status(response.statusCode).send(response.message);
@@ -46,7 +62,7 @@ router.post('/take', async function (req: Request, res: Response) {
     try { await requestManager.validateRequest(req); }
     catch (error) { res.status(500).send(error.message); }
 
-    let response: Environmentalist.Response = responseManager.takeEnvironmentByMessage(
+    let response: Environmentalist.Response = environmentManager.takeEnvironmentByMessage(
         req.body.text, new Environmentalist.User(req.body.user_name, req.body.user_id));
 
     res.status(response.statusCode).send(response.message);

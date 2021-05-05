@@ -1,5 +1,6 @@
 import {User} from "./User";
 import {EnvironmentFreeError, EnvironmentAlreadyTakenError} from "..";
+import {EnvironmentHealth} from "./EnvironmentHealth";
 
 /**
  * Environments model.
@@ -9,12 +10,18 @@ export class Environment {
     public taken: boolean;
     public takenAt: Date | null;
     public takenBy: User;
+    public health: EnvironmentHealth;
 
     constructor(name: string, taken: boolean = false, takenAt: Date|null = null, user: User = new User()) {
         this.name = name;
         this.taken = taken;
         this.takenAt = takenAt;
         this.takenBy = user;
+        this.health = new EnvironmentHealth();
+    }
+
+    public setHealth(healthy: boolean, note: string | null = null):void {
+        this.health.update(healthy, note)
     }
 
     public take(user: User, takeByForce: boolean): void {

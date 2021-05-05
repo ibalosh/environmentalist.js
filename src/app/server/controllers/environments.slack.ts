@@ -11,6 +11,22 @@ router.use(function (req, res, next) {
 });
 
 /**
+ * Environments health route.
+ */
+router.post('/healthy', async function (req: Request, res: Response) {
+    let response: Environmentalist.Response = environmentManager.setEnvironmentHealth(req.body.text,true);
+    res.status(response.statusCode).send(response.message);
+});
+
+/**
+ * Environments health route.
+ */
+router.post('/unhealthy', async function (req: Request, res: Response) {
+    let response: Environmentalist.Response = environmentManager.setEnvironmentHealth(req.body.text, false);
+    res.status(response.statusCode).send(response.message);
+});
+
+/**
  * Environments status route.
  */
 router.post('/status', function (req: Request, res: Response) {
