@@ -24,6 +24,8 @@ export abstract class Response {
     public abstract generateNotExistingEnvironmentMessage(environmentName: string, environmentNames: string[]): void;
 
     public abstract generateEnvironmentStatusMessage(environments: Environment[]): void;
+
+    public abstract generateEnvironmentBrokenNoteMissingMessage(): void;
 }
 
 export class ApiResponse extends Response {
@@ -49,5 +51,9 @@ export class ApiResponse extends Response {
 
     public generateEnvironmentStatusMessage(environments: Environment[]) {
         this.message = JSON.stringify(environments);
+    }
+
+    public generateEnvironmentBrokenNoteMissingMessage(): void {
+        this.message = "Note has to be provided when reporting broken environment.";
     }
 }

@@ -16,7 +16,14 @@ router.use(function (req, res, next) {
  * Environments health route.
  */
 router.post('/healthy', async function (req: Request, res: Response) {
-    let response: Environmentalist.Response = environmentManager.setEnvironmentHealth(req.body.text,true);
+    const slackApi = new Slack(Environmentalist.App.config.slackUrl, Environmentalist.App.config.slackAuthHeader);
+    const requestManager: RequestManager = new RequestManager(slackApi);
+
+    try { await requestManager.validateRequest(req); }
+    catch (error) { res.status(500).send(error.message); }
+
+    let user = new Environmentalist.User(req.body.user_name, req.body.user_id)
+    let response: Environmentalist.Response = environmentManager.setEnvironmentHealth(req.body.text,user, true);
     res.status(response.statusCode).send(response.message);
 });
 
@@ -24,7 +31,14 @@ router.post('/healthy', async function (req: Request, res: Response) {
  * Environments health route.
  */
 router.post('/unhealthy', async function (req: Request, res: Response) {
-    let response: Environmentalist.Response = environmentManager.setEnvironmentHealth(req.body.text, false);
+    const slackApi = new Slack(Environmentalist.App.config.slackUrl, Environmentalist.App.config.slackAuthHeader);
+    const requestManager: RequestManager = new RequestManager(slackApi);
+
+    try { await requestManager.validateRequest(req); }
+    catch (error) { res.status(500).send(error.message); }
+
+    let user = new Environmentalist.User(req.body.user_name, req.body.user_id)
+    let response: Environmentalist.Response = environmentManager.setEnvironmentHealth(req.body.text,user, true);
     res.status(response.statusCode).send(response.message);
 });
 

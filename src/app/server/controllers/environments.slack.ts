@@ -14,7 +14,8 @@ router.use(function (req, res, next) {
  * Environments health route.
  */
 router.post('/healthy', async function (req: Request, res: Response) {
-    let response: Environmentalist.Response = environmentManager.setEnvironmentHealth(req.body.text,true);
+    let user = new Environmentalist.User(req.body.user_name, req.body.user_id)
+    let response: Environmentalist.Response = environmentManager.setEnvironmentHealth(req.body.text,user, true);
     res.status(response.statusCode).send(response.message);
 });
 
@@ -22,7 +23,8 @@ router.post('/healthy', async function (req: Request, res: Response) {
  * Environments health route.
  */
 router.post('/unhealthy', async function (req: Request, res: Response) {
-    let response: Environmentalist.Response = environmentManager.setEnvironmentHealth(req.body.text, false);
+    let user = new Environmentalist.User(req.body.user_name, req.body.user_id)
+    let response: Environmentalist.Response = environmentManager.setEnvironmentHealth(req.body.text, user,false);
     res.status(response.statusCode).send(response.message);
 });
 

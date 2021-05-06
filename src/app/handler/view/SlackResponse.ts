@@ -107,7 +107,8 @@ export class SlackResponse extends ApiResponse {
             }
 
             if (environment.health.healthy === false && environment.health.note !== null) {
-                fields.push(that.createAttachmentField(null, `⚠️  ${environment.health.note}`));
+                const note: string = `${environment.health.note} - report by: ${environment.health.updateBy.username}`
+                fields.push(that.createAttachmentField(null, `⚠️  ${note}`));
             }
 
             attachment.fields = fields;
@@ -136,6 +137,11 @@ export class SlackResponse extends ApiResponse {
 
     private createAttachmentField(title: string | null, value: string): SlackAttachmentField {
         return new SlackAttachmentField(title, value);
+    }
+
+    public generateEnvironmentBrokenNoteMissingMessage(): void {
+        super.generateEnvironmentBrokenNoteMissingMessage();
+        this.formatApiMessageForSlack();
     }
 
 }

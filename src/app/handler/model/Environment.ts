@@ -20,8 +20,8 @@ export class Environment {
         this.health = new EnvironmentHealth();
     }
 
-    public setHealth(healthy: boolean, note: string | null = null):void {
-        this.health.update(healthy, note)
+    public setHealth(user: User, healthy: boolean, note: string | null = null):void {
+        this.health.update(user, healthy, note)
     }
 
     public take(user: User, takeByForce: boolean): void {

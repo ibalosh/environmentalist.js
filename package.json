@@ -1,6 +1,6 @@
 {
   "name": "environmentalist.js",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "A simple Node.js app to be used with Slack for managing environment occupancy.",
   "license": "MITNFA",
   "main": "./dist/index.js",

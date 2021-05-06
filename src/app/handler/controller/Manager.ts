@@ -1,4 +1,4 @@
-import {Environment, User, Response} from "../index";
+import {Environment, User, Response, EnvironmentBrokenNoteMissingError} from "../index";
 import * as Errors from "./Errors";
 import DataSaver from "./DataSaver"
 import moment = require("moment");
@@ -170,16 +170,27 @@ export class Manager {
      * @param {EnvironmentHealth} note - details about environment health
      * @returns {Response} - environment status response
      */
-    public setEnvironmentHealth(message: string, healthy: boolean): Response {
+    public setEnvironmentHealth(message: string, user: User, healthy: boolean): Response {
         const parsedMessage = this.parseEnvironmentHealthMessage(message)
         const environmentName: string = parsedMessage.environmentName;
         const note: string | null = (healthy === true)? null : parsedMessage.note;
 
         try {
-            this.retrieveEnvironment(environmentName).setHealth(healthy, note);
+            this.retrieveEnvironment(environmentName).setHealth(user, healthy, note);
             this.response.generateEnvironmentStatusMessage(Manager.environments);
+            Manager.dataSaver.preserveState(Manager.environments);
         } catch (error) {
-            this.response.generateNotExistingEnvironmentMessage(environmentName, this.getEnvironmentNames());
+            switch (error.name) {
+                case Errors.EnvironmentNotExistingError.name:
+                    this.response.generateNotExistingEnvironmentMessage(environmentName, this.getEnvironmentNames());
+                    break;
+                case Errors.EnvironmentBrokenNoteMissingError.name:
+                    this.response.generateEnvironmentBrokenNoteMissingMessage();
+                    break;
+                default:
+                    throw error;
+                    break;
+            }
         }
 
         return this.response;

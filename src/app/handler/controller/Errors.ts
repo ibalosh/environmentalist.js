@@ -17,6 +17,14 @@ export class EnvironmentalistError extends Error {
     }
 }
 
+export class EnvironmentBrokenNoteMissingError extends EnvironmentalistError {
+    constructor(message: string) {
+        super(message);
+        Object.setPrototypeOf(this, EnvironmentBrokenNoteMissingError.prototype);
+        this.setUpStackTrace();
+    }
+}
+
 export class EnvironmentNotExistingError extends EnvironmentalistError {
     constructor(message: string) {
         super(message);
