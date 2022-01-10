@@ -1,0 +1,12 @@
+version: '3.3'
+
+services:
+  environmentalist:
+    build:
+      context: .
+    ports:
+      - 3000:3000
+    volumes:
+      - ./data:/app/data
+    env_file:
+      - .env
