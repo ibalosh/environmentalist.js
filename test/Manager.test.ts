@@ -1,4 +1,4 @@
-import { expect } from 'chai';
+import {expect} from 'chai';
 import 'mocha';
 import * as Environmentalist from '../src'
 
@@ -9,7 +9,7 @@ describe('Manager', () => {
 
 
     beforeEach(() => {
-        Environmentalist.Manager.initDataSaver('./data');
+        Environmentalist.Manager.initFileStorage('./data', 'environmentalist.json');
         Environmentalist.Manager.clearEnvironmentsStateFile();
         Environmentalist.Manager.initEnvironments(environmentNames, false);
         manager = new Environmentalist.Manager(new Environmentalist.ApiResponse());

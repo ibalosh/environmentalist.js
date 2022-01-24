@@ -1,14 +1,14 @@
-import {EnvironmentRequestError, Slack} from "../../index";
+import {EnvironmentRequestError, SlackApi} from "../../index";
 import {Request} from "express";
 
 export default class RequestManager {
-    slackApi: Slack;
+    slackApi: SlackApi;
 
-    constructor(slackApi: Slack) {
+    constructor(slackApi: SlackApi) {
         this.slackApi = slackApi;
     }
 
-    public async validateRequest(req: Request) {
+    public async transformRequest(req: Request) {
         await this.validateUserDetails(req);
     }
 
@@ -17,12 +17,16 @@ export default class RequestManager {
         const userId: string | undefined = this.retrieveUserId(req);
 
         if (userId === undefined && userEmail === undefined) {
-            throw new EnvironmentRequestError("Request' doesn't have user id or email address.")
+            throw new EnvironmentRequestError("Request doesn't have user id or email address.")
         }
         else if (userId === undefined) {
-            const slackResponse:any = await this.findSlackUserByEmail(req.body.user_email);
-            this.updateRequest(req, slackResponse.user.id, slackResponse.user.name);
+            await this.updateRequestWithSlackUserDetails(req);
         }
+    }
+
+    private async updateRequestWithSlackUserDetails(req: Request) {
+        const slackResponse:any = await this.findSlackUserByEmail(req.body.user_email);
+        this.updateRequest(req, slackResponse.user.id, slackResponse.user.name);
     }
 
     private retrieveUserEmail(req: Request): string {

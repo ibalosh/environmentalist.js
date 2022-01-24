@@ -1,11 +1,12 @@
 import {ApiResponse} from "./Response";
-import {Environment, User} from "..";
+import {Environment, Deployment, User, RepoDepoyments, Hash} from "..";
 import moment = require("moment");
+import {Message, Blocks} from 'slack-block-builder';
 
 enum SlackColor {
     GREEN = "#36a64f",
     RED = "#FF0000",
-    ORANGE = "#FF8C00"
+    ORANGE = "#FF8C00",
 }
 
 class SlackAttachment {
@@ -41,8 +42,7 @@ class SlackMessage {
     public text: string;
     public attachments?: SlackAttachment[];
     public response_type: SlackResponseType;
-    public channel?: string;
-
+    
     constructor(text: string, responseType: SlackResponseType = SlackResponseType.HIDDEN_TO_PUBLIC) {
         this.response_type = responseType;
         this.text = text;
@@ -86,57 +86,92 @@ export class SlackResponse extends ApiResponse {
     }
 
     public generateEnvironmentStatusMessage(environments: Environment[]) {
-        let that = this;
-
-        let attachments: SlackAttachment[] = [];
-        let data: SlackMessage = new SlackMessage("Environments status");
-
+        let blocks: any = []
+        blocks.push(Blocks.Divider());
         environments.forEach(function(environment: Environment){
-            let attachment: SlackAttachment = new SlackAttachment(that.getAttachmentColor(environment))
-            let fields: SlackAttachmentField[] = [];
-
-            if (environment.taken === false) {
-                fields.push(that.createAttachmentField(environment.name, "free"));
+            if (!environment.taken) {
+                blocks.push(Blocks.Section({text: `:green_heart: *${environment.name}*`}));
+                blocks.push(Blocks.Section({text: "free"}));
             }
             else {
                 if (environment.takenAt === null) { environment.takenAt = new Date(); }
                 const timeString: string = moment(environment.takenAt).utcOffset('-0400').format('MMMM DD - HH:mm A');
-                fields.push(that.createAttachmentField(environment.name,
-                    `taken by: ${environment.takenBy.username}`));
-                fields.push(that.createAttachmentField(null, `taken at: ${timeString} EST`));
+                const text = `taken by: ${environment.takenBy.username}\ntaken at: ${timeString} EST`;
+                blocks.push(Blocks.Section({text: `:heart: *${environment.name}*`}));
+                blocks.push(Blocks.Section({text: text}));
             }
 
-            if (environment.health.healthy === false && environment.health.note !== null) {
+            if (!environment.health.healthy && environment.health.note !== null) {
                 const note: string = `${environment.health.note} - report by: ${environment.health.updateBy.username}`
-                fields.push(that.createAttachmentField(null, `⚠️  ${note}`));
+                blocks.push(Blocks.Section({text: `:warning: *broken environment* - ${note}`}));
             }
 
-            attachment.fields = fields;
-            attachments.push(attachment);
+            blocks.push(Blocks.Divider());
         });
 
-        data.attachments = attachments;
-        this.message = JSON.stringify(data);
+        this.message = Message().blocks(
+            Blocks.Header({text: 'Environments status'}), blocks).buildToJSON();
     }
 
-    private getAttachmentColor(environment: Environment): SlackColor {
-        let color: SlackColor;
-
-        if (environment.health.healthy === false) {
-            color = SlackColor.ORANGE
-        }
-        else if (environment.taken === true) {
-            color = SlackColor.RED;
-        }
-        else {
-            color = SlackColor.GREEN;
-        }
-
-        return color;
+    public generateEnvironmentDeploymentStatusMessage(deployments: Deployment[]) {
+        return this.generateDeploymentBlocksByRepo(deployments);
     }
 
-    private createAttachmentField(title: string | null, value: string): SlackAttachmentField {
-        return new SlackAttachmentField(title, value);
+    private generateDeploymentBlocksByRepo(deployments: Deployment[]):void {
+        let blocks: any = [];
+        blocks.push(Blocks.Divider());
+
+        let repoDeployments: Hash<Deployment[]> = RepoDepoyments.transformDeployments(deployments);
+
+        Object.keys(repoDeployments).forEach(function (repoName: string) {
+            const deploymentServiceString = `\`${repoName}\``;
+            blocks.push(Blocks.Section({text: deploymentServiceString}));
+
+            repoDeployments[repoName].forEach(function (deployment: Deployment) {
+                const service: string = deployment.service;
+                const branchOrRelease = deployment.branch || deployment.release;
+                const branchOrReleaseLabel = (deployment.branch === '') ? "release": "branch";
+                const branchOrReleaseString = `*${branchOrReleaseLabel}* ${branchOrRelease}`;
+                const serviceString = (deployment.service === deployment.serviceFormatted) ? '' : `*${service}*`;
+                const shaString = (deployment.shortSha === '') ? '' : `*sha* ${deployment.shortSha}`;
+                const userString = `*user* ${deployment.user || 'unknown'}`;
+                const timeString = `*time* ${deployment.timestamp}`
+
+                const text =    `${serviceString}\n${branchOrReleaseString}, ${shaString}` +
+                                `\n${userString}, ${timeString}`
+
+                blocks.push(Blocks.Section({text: text}));
+            })
+            blocks.push(Blocks.Divider());
+        });
+
+        this.message = Message().blocks(
+            Blocks.Header({text: 'Releases status'}), blocks).buildToJSON();
+    }
+
+    private generateDeploymentBlocks(deployments: Deployment[]):void {
+        let blocks: any = [];
+        blocks.push(Blocks.Divider());
+
+        deployments.forEach(function (deployment: Deployment) {
+            const branchOrRelease = deployment.branch || deployment.release;
+            const branchOrReleaseLabel = (deployment.branch === '') ? "release" : "branch";
+            const branchOrReleaseString = `*${branchOrReleaseLabel}* ${branchOrRelease}`
+            const deploymentServiceString = `\`${deployment.serviceFormatted}\``;
+            const shaString = (deployment.shortSha === '') ? '' : `*sha* ${deployment.shortSha}`;
+            const userString = `*user* ${deployment.user || 'unknown'}`;
+            const timeString = `*time* ${deployment.timestamp}`
+
+            const text =    `${deploymentServiceString}` +
+                `\n${branchOrReleaseString}, ${shaString}` +
+                `\n${userString}, ${timeString}`
+
+            blocks.push(Blocks.Section({text: text}));
+            blocks.push(Blocks.Divider());
+        });
+
+        this.message = Message().blocks(
+            Blocks.Header({text: 'Releases status'}), blocks).buildToJSON();
     }
 
     public generateEnvironmentBrokenNoteMissingMessage(): void {

@@ -37,6 +37,14 @@ router.post('/status', function (req: Request, res: Response) {
 });
 
 /**
+ * Environments status route.
+ */
+router.post('/status/releases', async function (req: Request, res: Response) {
+    let response: Environmentalist.Response = await environmentManager.environmentDeploymentStatusPage(req.body.text);
+    res.status(response.statusCode).send(response.message);
+});
+
+/**
  * Free environment route.
  */
 router.post('/free', function (req: Request, res: Response) {

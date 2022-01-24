@@ -1,4 +1,4 @@
-import {Environment, User} from "..";
+import {Environment, User, Deployment} from "..";
 
 /**
  * Represents the base model for the reponse which is going to be made by a service,
@@ -24,6 +24,8 @@ export abstract class Response {
     public abstract generateNotExistingEnvironmentMessage(environmentName: string, environmentNames: string[]): void;
 
     public abstract generateEnvironmentStatusMessage(environments: Environment[]): void;
+
+    public abstract generateEnvironmentDeploymentStatusMessage(releases: Deployment[]): void;
 
     public abstract generateEnvironmentBrokenNoteMissingMessage(): void;
 }
@@ -51,6 +53,10 @@ export class ApiResponse extends Response {
 
     public generateEnvironmentStatusMessage(environments: Environment[]) {
         this.message = JSON.stringify(environments);
+    }
+
+    public generateEnvironmentDeploymentStatusMessage(deployments: Deployment[]) {
+        this.message = JSON.stringify(deployments);
     }
 
     public generateEnvironmentBrokenNoteMissingMessage(): void {

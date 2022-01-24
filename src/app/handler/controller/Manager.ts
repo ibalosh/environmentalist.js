@@ -1,7 +1,12 @@
-import {Environment, User, Response, EnvironmentBrokenNoteMissingError} from "../index";
+import {
+    Environment,
+    User,
+    Response,
+    EnvironmentBrokenNoteMissingError,
+    Deployment,
+} from "../index";
+import {EnvironmentalistFileClient, EnvironmentalistDBClient, StorageClient} from "../index";
 import * as Errors from "./Errors";
-import DataSaver from "./DataSaver"
-import moment = require("moment");
 import {setInterval} from "timers";
 
 interface EnvironmentToTakeParsed {
@@ -21,14 +26,18 @@ interface EnvironmentHealthParsed {
 export class Manager {
     public static environments: Environment[] = [];
     protected response: Response;
-    private static dataSaver: DataSaver;
+    private static storageClient: StorageClient;
 
     constructor(response: Response) {
         this.response = response;
     }
 
-    public static initDataSaver(path: string) {
-      this.dataSaver = new DataSaver(path);
+    public static initFileStorage(path: string, fileName: string) {
+      this.storageClient = new EnvironmentalistFileClient(path, fileName);
+    }
+
+    public static initDBStorage(tableName:string) {
+        this.storageClient = new EnvironmentalistDBClient(tableName)
     }
 
     /**
@@ -36,17 +45,19 @@ export class Manager {
      * @param {string[]} environmentNames - names of environments
      * @param {boolean} clearEnvironmentStatesByTime - if environment is take for too long, free it
      */
-    public static initEnvironments(environmentNames: string[], clearEnvironmentStatesByTime: boolean = true): void {
-        if (Manager.setEnvironmentsStateFromFile() === false) {
+    public static async initEnvironments(environmentNames: string[], clearEnvironmentStatesByTime: boolean = true) {
+        const preservedState = await Manager.setPreservedEnvironmentsState()
+        if (!preservedState) {
             Manager.environments = [];
             environmentNames.forEach((environmentName: string) => {
                 Manager.environments.push(new Environment(environmentName))
             });
         }
 
-        if (clearEnvironmentStatesByTime === true) {
+        if (clearEnvironmentStatesByTime) {
             this.clearEnvironmentsPeriodically();
         }
+
     }
 
     /**
@@ -68,22 +79,18 @@ export class Manager {
                 }
             });
 
-            Manager.dataSaver.preserveState(Manager.environments);
+            Manager.storageClient.saveEnvironmentData(Manager.environments);
         }, checkReservationPeriodSeconds);
-    }
-
-    public static clearEnvironmentsStateFile(): void {
-        Manager.dataSaver.clearState();
     }
 
     /**
      * Initialize environments with all their states set, from file.
      * @returns {boolean} - true if operation was executed
      */
-    private static setEnvironmentsStateFromFile(): boolean {
-        const environments = Manager.dataSaver.retrieveState();
+    private static async setPreservedEnvironmentsState(): Promise<boolean> {
+        const environments = await Manager.storageClient.retrieveEnvironmentData();
 
-        if (environments !== null) {
+        if (environments.length !== 0) {
             Manager.environments = environments;
             return true;
         }
@@ -110,6 +117,42 @@ export class Manager {
         return this.response;
     }
 
+    public async environmentDeploymentStatusPage(message: string): Promise<Response> {
+        const parsedMessage = this.parseTextMessageForEnvironmentAndNote(message)
+        const deployments: Deployment[] = await Manager.storageClient.
+        retrieveDeploymentStatusData(parsedMessage.environmentName);
+        const filteredDeployments = this.filterByService(deployments, parsedMessage.note || '')
+
+        this.response.generateEnvironmentDeploymentStatusMessage(filteredDeployments);
+        return this.response;
+    }
+
+    public filterByService(deployments: Deployment[], service: string): Deployment[] {
+        if (!service) { return deployments; }
+        const wildCardSign:string = '%';
+        const searchString = service.replace(new RegExp(`${wildCardSign}`, 'g' ), "");
+
+        if (service.startsWith(wildCardSign) && service.endsWith(wildCardSign)) {
+            return this.filterByServiceUsingFunc(deployments, s => s.includes(searchString));
+        }
+
+        if (service.startsWith(wildCardSign)) {
+            return this.filterByServiceUsingFunc(deployments, s => s.endsWith(searchString));
+        }
+
+        if (service.endsWith(wildCardSign)) {
+            return this.filterByServiceUsingFunc(deployments, s => s.startsWith(searchString));
+        }
+
+        return this.filterByServiceUsingFunc(deployments, s => s == searchString);
+    }
+
+    private filterByServiceUsingFunc(deployments: Deployment[], fn: (searchString: string) => boolean) {
+        return deployments.filter(r => {
+            return fn(r.serviceFormatted.toLowerCase());
+        });
+    }
+
     /**
      * Free environment, if possible.
      *
@@ -121,7 +164,7 @@ export class Manager {
         try {
             this.retrieveEnvironment(environmentName).free(user);
             this.response.generateFreeMessage(environmentName, user);
-            Manager.dataSaver.preserveState(Manager.environments);
+            Manager.storageClient.saveEnvironmentData(Manager.environments);
         } catch (error) {
             this.handleErrors(error, environmentName, user);
         }
@@ -140,7 +183,7 @@ export class Manager {
         try {
             this.retrieveEnvironment(environmentName).take(user, takeByForce);
             this.response.generateTakeMessage(environmentName, user);
-            Manager.dataSaver.preserveState(Manager.environments);
+            Manager.storageClient.saveEnvironmentData(Manager.environments);
         } catch (error) {
             this.handleErrors(error, environmentName, user)
         }
@@ -171,14 +214,14 @@ export class Manager {
      * @returns {Response} - environment status response
      */
     public setEnvironmentHealth(message: string, user: User, healthy: boolean): Response {
-        const parsedMessage = this.parseEnvironmentHealthMessage(message)
+        const parsedMessage = this.parseTextMessageForEnvironmentAndNote(message)
         const environmentName: string = parsedMessage.environmentName;
-        const note: string | null = (healthy === true)? null : parsedMessage.note;
+        const note: string | null = healthy ? null : parsedMessage.note;
 
         try {
             this.retrieveEnvironment(environmentName).setHealth(user, healthy, note);
             this.response.generateEnvironmentStatusMessage(Manager.environments);
-            Manager.dataSaver.preserveState(Manager.environments);
+            Manager.storageClient.saveEnvironmentData(Manager.environments);
         } catch (error) {
             switch (error.name) {
                 case Errors.EnvironmentNotExistingError.name:
@@ -189,7 +232,6 @@ export class Manager {
                     break;
                 default:
                     throw error;
-                    break;
             }
         }
 
@@ -210,7 +252,7 @@ export class Manager {
         }
     }
 
-    private parseEnvironmentHealthMessage(messageToBeParsed: string): EnvironmentHealthParsed {
+    private parseTextMessageForEnvironmentAndNote(messageToBeParsed: string): EnvironmentHealthParsed {
         const messageParts: string[] = messageToBeParsed.toString().trim().split(" ").filter(String);
         const environmentName: any = messageParts.shift();
         const note: string|null = messageParts.length > 0 ? messageParts.join(' ') : null
@@ -241,7 +283,6 @@ export class Manager {
                 break;
             default:
                 throw error;
-                break;
         }
     }
 

@@ -1,3 +1,6 @@
+**/*.DS_Store
+**/*.idea
+
 dist
 logs
 *.log
@@ -7,14 +10,12 @@ node_modules
 temp
 *.yaml
 
-**/*.DS_Store
-**/*.idea
-
+**/*.js
 *.swp
-**/*.DS_Store
-**/*.idea
 **/*.iml
-src/test.ts
+test*.ts
 config.json
 data
+
+
 
