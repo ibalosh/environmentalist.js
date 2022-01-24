@@ -1,23 +1,22 @@
 import { LocalStorage } from "node-localstorage";
-import {Environment} from "..";
+import {Environment} from "../../index";
+import {StorageClient} from "./StorageClient";
 
 /**
  * We want to preserve state when the server needs a reboot.
  * This class does a simple save/load of states to a file.
  */
-class DataSaver {
-    private localStorage: LocalStorage;
-    private fileName: string = 'environments.json';
-
-    constructor(path: string) {
-        this.localStorage = new LocalStorage(path);
+export abstract class FileStorageClient extends StorageClient{
+    constructor(path: string, fileName: string) {
+        super();
+        this.configuration = { fileName: fileName, path: path };
+        this.client = new LocalStorage(path);
     }
+}
 
-    /**
-     * Delete all preserved states.
-     */
-    public clearState() {
-        this.localStorage.clear();
+export class EnvironmentalistFileClient extends FileStorageClient {
+    public retrieveDeploymentStatusData(filter: any): any {
+        throw Error('Not implemented.');
     }
 
     /**
@@ -25,10 +24,9 @@ class DataSaver {
      *
      * @param {Environment[]} environments - environments to save
      */
-    public preserveState(environments: Environment[]) {
+    public saveEnvironmentData(environments: Environment[]) {
         try {
-            let object: string = JSON.stringify(environments);
-            this.localStorage.setItem(this.fileName, object);
+            this.client.setItem(this.configuration.fileName, JSON.stringify(environments));
         } catch (e) {
             // for now, only log errors to console
             console.log(e);
@@ -40,17 +38,17 @@ class DataSaver {
      *
      * @returns {Environment[] | null} - environment states, if available.
      */
-    public retrieveState():Environment[]|null {
+    public retrieveEnvironmentData():Environment[] {
         try {
-            const data: string | null = this.localStorage.getItem(this.fileName);
-            return (data !== null) ? this.populateEnvironments(data) : null;
+            const data: string | null = this.client.getItem(this.configuration.fileName);
+            return (data !== null) ? this.formatResponse(data) : [];
         } catch (e) {
             console.log(e);
-            return null;
+            return [];
         }
     }
 
-    private populateEnvironments(data: string): Environment[] {
+    private formatResponse(data: string): Environment[] {
         const savedEnvironments: Environment[] = JSON.parse(data);
         const environments:Environment[] = [];
 
@@ -59,6 +57,5 @@ class DataSaver {
         });
         return environments;
     }
-}
 
-export default DataSaver;
+}

@@ -4,7 +4,7 @@ import * as Environmentalist from "../index";
 /**
  * Slack endpoints to be used by Slack wrapper.
  */
-enum SlackEndpoints {
+enum SlackApiEndpoints {
     userList = 'api/users.list',
     userByEmail = 'api/users.lookupByEmail',
     postMessage = 'api/chat.postMessage'
@@ -13,7 +13,7 @@ enum SlackEndpoints {
 /**
  * Represents API requests wrapper for Slack.
  */
-export class Slack extends ApiRequest {
+export class SlackApi extends ApiRequest {
     public constructor(url: string, authHeader: string) {
         super(url);
 
@@ -30,7 +30,7 @@ export class Slack extends ApiRequest {
      * @returns {Promise<T>} - promise response
      */
     public findUserByEmail<T>(emailAddress: string): Promise<T> {
-        return this.processRequest(APIRequestType.GET, `${SlackEndpoints.userByEmail}?email=${emailAddress}`);
+        return this.processRequest(APIRequestType.GET, `${SlackApiEndpoints.userByEmail}?email=${emailAddress}`);
     };
 
     /**
@@ -43,6 +43,6 @@ export class Slack extends ApiRequest {
      */
     public sendMessageToUser<T>(userId: string, message: string): Promise<T> {
         const data = { channel: userId, text: message };
-        return this.processRequest(APIRequestType.POST, `${SlackEndpoints.postMessage}`, data);
+        return this.processRequest(APIRequestType.POST, `${SlackApiEndpoints.postMessage}`, data);
     };
 }

@@ -1,9 +1,10 @@
 export * from "./model/Environment";
 export * from "./model/User";
+export * from "./model/Deployment";
 export * from "./view/Response";
 export * from "./view/SlackResponse";
 export * from "./controller/Errors";
 export * from "./controller/Manager";
-
-
-
+export * from "./controller/storage/FileStorageClient";
+export * from "./controller/storage/DynamoDbClient";
+export * from "./controller/storage/StorageClient";

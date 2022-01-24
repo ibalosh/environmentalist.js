@@ -1,6 +1,6 @@
 import {Router, Response, Request} from 'express';
 import * as Environmentalist from "../../index";
-import {Slack} from "../../index";
+import {SlackApi} from "../../index";
 import RequestManager from './RequestManager';
 
 const router: Router = Router();
@@ -16,10 +16,10 @@ router.use(function (req, res, next) {
  * Environments health route.
  */
 router.post('/healthy', async function (req: Request, res: Response) {
-    const slackApi = new Slack(Environmentalist.App.config.slackUrl, Environmentalist.App.config.slackAuthHeader);
+    const slackApi = new SlackApi(Environmentalist.App.config.slackUrl, Environmentalist.App.config.slackAuthHeader);
     const requestManager: RequestManager = new RequestManager(slackApi);
 
-    try { await requestManager.validateRequest(req); }
+    try { await requestManager.transformRequest(req); }
     catch (error) { res.status(500).send(error.message); }
 
     let user = new Environmentalist.User(req.body.user_name, req.body.user_id)
@@ -31,14 +31,14 @@ router.post('/healthy', async function (req: Request, res: Response) {
  * Environments health route.
  */
 router.post('/unhealthy', async function (req: Request, res: Response) {
-    const slackApi = new Slack(Environmentalist.App.config.slackUrl, Environmentalist.App.config.slackAuthHeader);
+    const slackApi = new SlackApi(Environmentalist.App.config.slackUrl, Environmentalist.App.config.slackAuthHeader);
     const requestManager: RequestManager = new RequestManager(slackApi);
 
-    try { await requestManager.validateRequest(req); }
+    try { await requestManager.transformRequest(req); }
     catch (error) { res.status(500).send(error.message); }
 
     let user = new Environmentalist.User(req.body.user_name, req.body.user_id)
-    let response: Environmentalist.Response = environmentManager.setEnvironmentHealth(req.body.text,user, true);
+    let response: Environmentalist.Response = environmentManager.setEnvironmentHealth(req.body.text,user, false);
     res.status(response.statusCode).send(response.message);
 });
 
@@ -51,13 +51,21 @@ router.post('/status', function (req: Request, res: Response) {
 });
 
 /**
+ * Environments status route.
+ */
+router.post('/status/releases', async function (req: Request, res: Response) {
+    let response: Environmentalist.Response = await environmentManager.environmentDeploymentStatusPage(req.body.text);
+    res.status(response.statusCode).send(response.message);
+});
+
+/**
  * Free environment route.
  */
 router.post('/free', async function (req: Request, res: Response) {
-    const slackApi = new Slack(Environmentalist.App.config.slackUrl, Environmentalist.App.config.slackAuthHeader);
+    const slackApi = new SlackApi(Environmentalist.App.config.slackUrl, Environmentalist.App.config.slackAuthHeader);
     const requestManager: RequestManager = new RequestManager(slackApi);
 
-    try { await requestManager.validateRequest(req); }
+    try { await requestManager.transformRequest(req); }
     catch (error) { res.status(500).send(error.message); }
 
     let response: Environmentalist.Response = environmentManager.freeEnvironment(
@@ -70,10 +78,10 @@ router.post('/free', async function (req: Request, res: Response) {
  * Take environment route.
  */
 router.post('/take', async function (req: Request, res: Response) {
-    const slackApi = new Slack(Environmentalist.App.config.slackUrl, Environmentalist.App.config.slackAuthHeader);
+    const slackApi = new SlackApi(Environmentalist.App.config.slackUrl, Environmentalist.App.config.slackAuthHeader);
     const requestManager: RequestManager = new RequestManager(slackApi);
 
-    try { await requestManager.validateRequest(req); }
+    try { await requestManager.transformRequest(req); }
     catch (error) { res.status(500).send(error.message); }
 
     let response: Environmentalist.Response = environmentManager.takeEnvironmentByMessage(
